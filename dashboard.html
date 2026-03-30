@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <title>ቃል (Qal) Admin - Master System</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 850px; margin: auto; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h2 { color: #1a73e8; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
+        .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; background: #1a73e8; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn:hover { background: #1557b0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ቃል (Qal) Master Control 🇪🇹</h1>
+
+    <div class="card">
+        <h2>📢 Ad & Media Setup</h2>
+        <input type="text" id="mediaUrl" placeholder="InfinityFree Link (e.g. https://intobible.rf.gd/ads/pic.jpg)">
+        <div style="display:flex; gap:10px;">
+            <select id="mediaType"><option value="image">Image</option><option value="video">Video</option></select>
+            <select id="mediaPos"><option value="start">Start</option><option value="mid">Middle</option><option value="end">End</option></select>
+        </div>
+        <button class="btn" onclick="saveMedia()" style="background:#34a853;">Update Ad Settings</button>
+    </div>
+
+    <div class="card">
+        <h2>📦 Add New Question</h2>
+        <textarea id="qText" placeholder="Enter Question text..." rows="3"></textarea>
+        <div class="choice-grid">
+            <input type="text" id="optA" placeholder="Option ሀ">
+            <input type="text" id="optB" placeholder="Option ለ">
+            <input type="text" id="optC" placeholder="Option ሐ">
+            <input type="text" id="optD" placeholder="Option መ">
+        </div>
+        <label>Correct Answer:</label>
+        <select id="correct"><option value="A">A (ሀ)</option><option value="B">B (ለ)</option><option value="C">C (ሐ)</option><option value="D">D (መ)</option></select>
+        <button class="btn" onclick="saveQuestion()">Save to Master Bank</button>
+    </div>
+
+    <div class="card">
+        <h2>📊 Results & 🏆 Lottery</h2>
+        <button onclick="drawWinner()" style="background:#fbbc05; border:none; padding:10px; border-radius:5px; font-weight:bold; cursor:pointer; width:100%;">Pick 100% Score Winner</button>
+        <div id="winnerDisplay" style="color:red; font-weight:bold; text-align:center; margin:15px; font-size:1.2em;"></div>
+        <table>
+            <thead><tr><th>Name</th><th>Phone</th><th>Score</th></tr></thead>
+            <tbody id="resTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCLiqB5FqygKqPwLlctFsvQBP58fHontnc",
+        authDomain: "biblicallanguagequizbot.firebaseapp.com",
+        projectId: "biblicallanguagequizbot",
+        storageBucket: "biblicallanguagequizbot.firebasestorage.app",
+        messagingSenderId: "1040255793336",
+        appId: "1:1040255793336:web:aea95b172a79204d57dc4d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function saveMedia() {
+        await db.collection("config").doc("ads").set({
+            url: document.getElementById('mediaUrl').value,
+            type: document.getElementById('mediaType').value,
+            pos: document.getElementById('mediaPos').value
+        });
+        alert("Ads Updated!");
+    }
+
+    async function saveQuestion() {
+        const text = document.getElementById('qText').value;
+        const options = [
+            document.getElementById('optA').value, 
+            document.getElementById('optB').value, 
+            document.getElementById('optC').value, 
+            document.getElementById('optD').value
+        ];
+        if(!text || options.includes("")) return alert("Please fill all fields!");
+
+        await db.collection("questions").add({
+            text: text,
+            options: options,
+            correct: document.getElementById('correct').value,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("Question Added!");
+        location.reload();
+    }
+
+    db.collection("results").orderBy("timestamp", "desc").limit(10).onSnapshot(snap => {
+        let h = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            h += `<tr><td>${d.name}</td><td>${d.phone}</td><td>${d.score}%</td></tr>`;
+        });
+        document.getElementById('resTable').innerHTML = h;
+    });
+
+    async function drawWinner() {
+        const snap = await db.collection("results").where("score", "==", 100).get();
+        const list = []; snap.forEach(doc => list.push(doc.data()));
+        if(list.length) {
+            const w = list[Math.floor(Math.random()*list.length)];
+            document.getElementById('winnerDisplay').innerText = `🎉 Winner: ${w.name} (${w.phone}) 🎉`;
+        } else {
+            alert("No 100% scores found.");
+        }
+    }
+</script>
+</body>
+</html>

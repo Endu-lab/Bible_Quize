@@ -1,0 +1,31 @@
+{
+  "short_name": "ቃል",
+  "name": "ቃል - Bible Quiz",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#4a90e2",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#4a90e2",
+  "shortcuts": [
+    {
+      "name": "መፈተን ጀምር",
+      "short_name": "ጀምር",
+      "url": "/index.html",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

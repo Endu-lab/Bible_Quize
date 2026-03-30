@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ቃል (Qal) - Bible Quiz</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4a90e2">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f39c12;
+            --bg: #f0f4f8;
+            --text: #2c3e50;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+            color: var(--text);
+        }
+
+        .container { 
+            background: white; 
+            width: 100%;
+            max-width: 400px; 
+            margin-top: 20px;
+            padding: 40px 25px; 
+            border-radius: 30px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
+            position: relative; 
+            overflow: hidden;
+            text-align: center;
+        }
+
+        #timer-bar { 
+            height: 6px; 
+            background: linear-gradient(to right, #ff416c, #ff4b2b); 
+            width: 100%; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            transition: width 1s linear; 
+        }
+
+        h1 { color: var(--primary); font-size: 2.5em; margin-bottom: 5px; }
+        p.subtitle { color: #7f8c8d; margin-top: 0; margin-bottom: 30px; }
+
+        .hidden { display: none; }
+
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 12px 0; 
+            border-radius: 15px; 
+            border: 2px solid #edf2f7; 
+            box-sizing: border-box; 
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus { border-color: var(--primary); }
+
+        .btn-start { 
+            width: 100%; 
+            padding: 18px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            border: none; 
+            border-radius: 15px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 18px;
+            box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
+        }
+
+        .choice-btn { 
+            width: 100%; 
+            padding: 18px; 
+            margin: 12px 0; 
+            border: 2px solid #edf2f7; 
+            border-radius: 18px; 
+            background: white; 
+            font-weight: 600; 
+            cursor: pointer; 
+            text-align: left; 
+            font-size: 16px; 
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        .choice-btn:hover { border-color: var(--primary); background: #f8fbff; }
+        .choice-btn:active { transform: scale(0.97); }
+
+        .choice-label {
+            background: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+
+        #progress-bg { height: 6px; background: #eee; border-radius: 3px; margin-bottom: 25px; overflow: hidden; }
+        #progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.4s; }
+        #timer-text { font-weight: bold; color: #e74c3c; margin-bottom: 10px; font-size: 0.9em; }
+
+        #qText { font-size: 1.3em; margin-bottom: 30px; line-height: 1.4; color: var(--text); font-weight: 700; }
+
+        .media img, .media video { width: 100%; border-radius: 20px; margin: 20px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="timer-bar" class="hidden"></div>
+    <h1>ቃል</h1>
+    <p class="subtitle">የመጽሐፍ ቅዱስ ፈተና</p>
+
+    <div id="step-reg">
+        <input type="text" id="uName" placeholder="ሙሉ ስም (Full Name)">
+        <input type="tel" id="uPhone" placeholder="ስልክ ቁጥር (Phone Number)">
+        <button class="btn-start" onclick="startApp()">መፈተን ጀምር ➔</button>
+    </div>
+
+    <div id="ad-box" class="hidden media"></div>
+
+    <div id="step-quiz" class="hidden">
+        <div id="progress-bg"><div id="progress-fill"></div></div>
+        <div id="timer-text">ቀሪ ጊዜ፡ <span id="seconds">15</span> ሰከንድ</div>
+        <div id="qText"></div>
+        <div id="options-container">
+            <button class="choice-btn" onclick="submitAns('A')"><div class="choice-label">ሀ</div> <span id="tA"></span></button>
+            <button class="choice-btn" onclick="submitAns('B')"><div class="choice-label">ለ</div> <span id="tB"></span></button>
+            <button class="choice-btn" onclick="submitAns('C')"><div class="choice-label">ሐ</div> <span id="tC"></span></button>
+            <button class="choice-btn" onclick="submitAns('D')"><div class="choice-label">መ</div> <span id="tD"></span></button>
+        </div>
+    </div>
+
+    <div id="step-res" class="hidden">
+        <h2 style="color:#27ae60;">ተጠናቀቀ!</h2>
+        <p>የእርስዎ ውጤት</p>
+        <div style="font-size: 4em; font-weight:900; color: var(--primary); margin: 10px 0;"><span id="finalScore">0</span>%</div>
+        <button class="btn-start" onclick="location.reload()">እንደገና ተጫወት</button>
+    </div>
+</div>
+
+<script>
+    // --- FIREBASE CONFIG ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyCLiqB5FqygKqPwLlctFsvQBP58fHontnc",
+        authDomain: "biblicallanguagequizbot.firebaseapp.com",
+        projectId: "biblicallanguagequizbot",
+        storageBucket: "biblicallanguagequizbot.firebasestorage.app",
+        messagingSenderId: "1040255793336",
+        appId: "1:1040255793336:web:aea95b172a79204d57dc4d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let qPool = [];
+    let idx = 0, score = 0, ads = null;
+    let timerInterval, timeLeft = 15;
+
+    async function startApp() {
+        const n = document.getElementById('uName').value;
+        const p = document.getElementById('uPhone').value;
+        if(!n || !p) return alert("እባክዎ መረጃዎን ያስገቡ!");
+
+        try {
+            const adDoc = await db.collection("config").doc("ads").get();
+            ads = adDoc.data();
+
+            const snap = await db.collection("questions").get();
+            let all = []; snap.forEach(doc => all.push(doc.data()));
+            
+            if(all.length === 0) return alert("ጥያቄዎች አልተገኙም!");
+            qPool = all.sort(() => 0.5 - Math.random()).slice(0, 20);
+
+            document.getElementById('step-reg').classList.add('hidden');
+            if(ads && ads.pos === 'start') showAd(showQ); else showQ();
+        } catch(e) {
+            alert("የመረጃ ስህተት! እባክዎ ኢንተርኔትዎን ያረጋግጡ።");
+        }
+    }
+
+    function showAd(callback) {
+        clearInterval(timerInterval);
+        const box = document.getElementById('ad-box');
+        box.classList.remove('hidden');
+        box.innerHTML = ads.type === 'image' ? `<img src="${ads.url}">` : `<video src="${ads.url}" autoplay muted playsinline></video>`;
+        setTimeout(() => { box.classList.add('hidden'); callback(); }, 5000);
+    }
+
+    function startTimer() {
+        timeLeft = 15;
+        const bar = document.getElementById('timer-bar');
+        bar.style.width = "100%";
+        bar.classList.remove('hidden');
+        
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('seconds').innerText = timeLeft;
+            bar.style.width = (timeLeft / 15 * 100) + "%";
+            
+            if(timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAns('TIMEOUT');
+            }
+        }, 1000);
+    }
+
+    function showQ() {
+        document.getElementById('step-quiz').classList.remove('hidden');
+        const q = qPool[idx];
+        
+        document.getElementById('progress-fill').style.width = ((idx / qPool.length) * 100) + "%";
+        
+        document.getElementById('qText').innerText = q.text;
+        document.getElementById('tA').innerText = q.options[0];
+        document.getElementById('tB').innerText = q.options[1];
+        document.getElementById('tC').innerText = q.options[2];
+        document.getElementById('tD').innerText = q.options[3];
+        
+        startTimer();
+    }
+
+    async function submitAns(letter) {
+        clearInterval(timerInterval);
+        if(letter === qPool[idx].correct) score++;
+        idx++;
+
+        if(idx === 10 && ads && ads.pos === 'mid') {
+            document.getElementById('step-quiz').classList.add('hidden');
+            document.getElementById('timer-bar').classList.add('hidden');
+            showAd(showQ);
+        } else if(idx < qPool.length) {
+            showQ();
+        } else {
+            finish();
+        }
+    }
+
+    async function finish() {
+        clearInterval(timerInterval);
+        document.getElementById('step-quiz').classList.add('hidden');
+        document.getElementById('timer-bar').classList.add('hidden');
+        
+        const pct = Math.round((score / qPool.length) * 100);
+        document.getElementById('finalScore').innerText = pct;
+        document.getElementById('step-res').classList.remove('hidden');
+
+        await db.collection("results").add({
+            name: document.getElementById('uName').value,
+            phone: document.getElementById('uPhone').value,
+            score: pct,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        if(ads && ads.pos === 'end') showAd(() => {});
+    }
+</script>
+
+<script>
+  // --- PWA SERVICE WORKER REGISTRATION ---
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      // ስሙ sw.js መሆኑን እና htdocs ውስጥ መኖሩን እርግጠኛ ይሁኑ
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => {
+          console.log('Service Worker Registered!');
+          // አዲስ ለውጥ ካለ እንዲያነብ
+          reg.update();
+        })
+        .catch(err => console.error('Registration failed:', err));
+    });
+  }
+
+  // ባነሩ መጥቶ እንዳይጠፋ የሚከላከል (Persistent Banner)
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+</script>
+
+</body>
+</html>
