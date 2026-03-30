@@ -1,36 +1,24 @@
-const CACHE_NAME = 'qal-v6'; // ስሙን ወደ v6 ቀይረነዋል (ለውጡን እንዲያውቅ)
+const CACHE_NAME = 'bible-quiz-v1';
 const assets = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  './',
+  './index.html',
+  './manifest.json'
 ];
 
-// አፑ ሲጫን ፋይሎቹን ሴቭ ያደርጋል
+// አፑ ሲጫን ፋይሎቹን "Cache" ለማድረግ
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return Promise.all(
-        assets.map((url) => {
-          return cache.add(url).catch(() => console.log("Missing: " + url));
-        })
-      );
+      return cache.addAll(assets);
     })
   );
 });
 
-// አዲሱ ሰርቪስ ወርከር ወዲያው ስራ እንዲጀምር
-self.addEventListener('activate', (event) => {
-  event.waitUntil(clients.claim());
-});
-
-// ፋይሎችን ከCache ወይም ከኢንተርኔት ያመጣል
+// አፑ እንዲከፈትና እንዲሰራ (በጣም አስፈላጊው ክፍል)
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
     })
   );
 });
