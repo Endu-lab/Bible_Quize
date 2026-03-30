@@ -4,16 +4,16 @@
   "description": "የመጽሐፍ ቅዱስ የጥያቄና መልስ ውድድር",
   "icons": [
     {
-      "src": "icon-192.png",
-      "type": "image/png",
+      "src": "https://via.placeholder.com/192.png/4a90e2/ffffff?text=Qal",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "icon-512.png",
-      "type": "image/png",
+      "src": "https://via.placeholder.com/512.png/4a90e2/ffffff?text=Qal",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "start_url": "./index.html",
@@ -21,13 +21,5 @@
   "orientation": "portrait",
   "scope": "./",
   "background_color": "#4a90e2",
-  "theme_color": "#4a90e2",
-  "shortcuts": [
-    {
-      "name": "መፈተን ጀምር",
-      "short_name": "ጀምር",
-      "url": "./index.html",
-      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
-    }
-  ]
+  "theme_color": "#4a90e2"
 }
