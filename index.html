@@ -6,39 +6,49 @@
     <title>ቃል (Qal) - Bible Quiz</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4a90e2">
+    <meta name="theme-color" content="#667eea">
+
+    <meta property="og:title" content="ቃል - የመጽሐፍ ቅዱስ ፈተና">
+    <meta property="og:description" content="እውቀትዎን ይፈትሹ! ተሳትፈው ሽልማቶችን ያሸንፉ።">
+    <meta property="og:image" content="https://endu-lab.github.io/Bible_Quize/icon-512.png">
+    <meta property="og:url" content="https://endu-lab.github.io/Bible_Quize/">
+    <meta property="og:type" content="website">
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
     <style>
         :root {
-            --primary: #4a90e2;
-            --secondary: #f39c12;
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #27ae60;
             --bg: #f0f4f8;
             --text: #2c3e50;
         }
 
         body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            background: var(--bg); 
+            font-family: 'Segoe UI', Roboto, 'Nyala', Arial, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             margin: 0; 
-            padding: 20px; 
+            padding: 15px; 
             display: flex;
             justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             color: var(--text);
         }
 
         .container { 
-            background: white; 
+            background: rgba(255, 255, 255, 0.95); 
             width: 100%;
-            max-width: 400px; 
-            margin-top: 20px;
+            max-width: 420px; 
             padding: 40px 25px; 
-            border-radius: 30px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
+            border-radius: 35px; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2); 
             position: relative; 
             overflow: hidden;
             text-align: center;
+            backdrop-filter: blur(10px);
         }
 
         #timer-bar { 
@@ -51,23 +61,36 @@
             transition: width 1s linear; 
         }
 
-        h1 { color: var(--primary); font-size: 2.5em; margin-bottom: 5px; }
-        p.subtitle { color: #7f8c8d; margin-top: 0; margin-bottom: 30px; }
+        /* Logo Styling */
+        .app-logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 { color: var(--primary); font-size: 2.8em; margin: 0; font-weight: 900; }
+        p.subtitle { color: #7f8c8d; margin-bottom: 30px; font-weight: 500; }
 
         .hidden { display: none; }
 
         input { 
             width: 100%; 
-            padding: 15px; 
-            margin: 12px 0; 
+            padding: 16px; 
+            margin: 10px 0; 
             border-radius: 15px; 
-            border: 2px solid #edf2f7; 
+            border: 2px solid #e2e8f0; 
             box-sizing: border-box; 
             font-size: 16px;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
         }
-        input:focus { border-color: var(--primary); }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1); }
 
         .btn-start { 
             width: 100%; 
@@ -79,15 +102,18 @@
             font-weight: bold; 
             cursor: pointer; 
             font-size: 18px;
+            margin-top: 15px;
             box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
+            transition: transform 0.2s;
         }
+        .btn-start:active { transform: scale(0.98); }
 
         .choice-btn { 
             width: 100%; 
-            padding: 18px; 
+            padding: 16px; 
             margin: 12px 0; 
             border: 2px solid #edf2f7; 
-            border-radius: 18px; 
+            border-radius: 20px; 
             background: white; 
             font-weight: 600; 
             cursor: pointer; 
@@ -97,14 +123,13 @@
             align-items: center;
             transition: all 0.2s ease;
         }
-        .choice-btn:hover { border-color: var(--primary); background: #f8fbff; }
-        .choice-btn:active { transform: scale(0.97); }
+        .choice-btn:hover { border-color: var(--primary); background: #f8fbff; transform: translateY(-2px); }
 
         .choice-label {
-            background: var(--primary);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -113,19 +138,26 @@
             font-size: 14px;
         }
 
-        #progress-bg { height: 6px; background: #eee; border-radius: 3px; margin-bottom: 25px; overflow: hidden; }
+        #progress-bg { height: 8px; background: #eee; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
         #progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.4s; }
-        #timer-text { font-weight: bold; color: #e74c3c; margin-bottom: 10px; font-size: 0.9em; }
+        
+        #qText { font-size: 1.4em; margin-bottom: 25px; line-height: 1.4; color: var(--text); font-weight: 700; }
 
-        #qText { font-size: 1.3em; margin-bottom: 30px; line-height: 1.4; color: var(--text); font-weight: 700; }
-
-        .media img, .media video { width: 100%; border-radius: 20px; margin: 20px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .fb-share {
+            background: #1877F2 !important;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="timer-bar" class="hidden"></div>
+    
+    <div class="app-logo">
+        <span style="font-size: 40px;">📖</span>
+    </div>
+
     <h1>ቃል</h1>
     <p class="subtitle">የመጽሐፍ ቅዱስ ፈተና</p>
 
@@ -139,7 +171,7 @@
 
     <div id="step-quiz" class="hidden">
         <div id="progress-bg"><div id="progress-fill"></div></div>
-        <div id="timer-text">ቀሪ ጊዜ፡ <span id="seconds">15</span> ሰከንድ</div>
+        <div id="timer-text" style="color: #e74c3c; font-weight: bold; margin-bottom: 15px;">ቀሪ ጊዜ፡ <span id="seconds">15</span> ሰከንድ</div>
         <div id="qText"></div>
         <div id="options-container">
             <button class="choice-btn" onclick="submitAns('A')"><div class="choice-label">ሀ</div> <span id="tA"></span></button>
@@ -150,15 +182,20 @@
     </div>
 
     <div id="step-res" class="hidden">
-        <h2 style="color:#27ae60;">ተጠናቀቀ!</h2>
+        <h2 style="color: var(--accent); margin: 0;">ተጠናቀቀ!</h2>
         <p>የእርስዎ ውጤት</p>
-        <div style="font-size: 4em; font-weight:900; color: var(--primary); margin: 10px 0;"><span id="finalScore">0</span>%</div>
+        <div style="font-size: 4.5em; font-weight:900; color: var(--primary); margin: 5px 0;"><span id="finalScore">0</span>%</div>
+        
         <button class="btn-start" onclick="location.reload()">እንደገና ተጫወት</button>
+        
+        <button class="btn-start fb-share" onclick="shareToFB()">
+            ውጤቴን ፌስቡክ ላይ ላጋራ
+        </button>
     </div>
 </div>
 
 <script>
-    // --- FIREBASE CONFIG ---
+    // --- FIREBASE CONFIG (ቀድሞ በነበረው ይቀጥላል) ---
     const firebaseConfig = {
         apiKey: "AIzaSyCLiqB5FqygKqPwLlctFsvQBP58fHontnc",
         authDomain: "biblicallanguagequizbot.firebaseapp.com",
@@ -174,6 +211,7 @@
     let idx = 0, score = 0, ads = null;
     let timerInterval, timeLeft = 15;
 
+    // --- LOGIC FUNCTIONS (ቀድሞ የነበሩት ግን የተሻሻሉ) ---
     async function startApp() {
         const n = document.getElementById('uName').value;
         const p = document.getElementById('uPhone').value;
@@ -187,7 +225,7 @@
             let all = []; snap.forEach(doc => all.push(doc.data()));
             
             if(all.length === 0) return alert("ጥያቄዎች አልተገኙም!");
-            qPool = all.sort(() => 0.5 - Math.random()).slice(0, 20);
+            qPool = all.sort(() => 0.5 - Math.random()).slice(0, 10); // ለሙከራ ወደ 10 አሳጥሬዋለሁ
 
             document.getElementById('step-reg').classList.add('hidden');
             if(ads && ads.pos === 'start') showAd(showQ); else showQ();
@@ -196,12 +234,16 @@
         }
     }
 
-    function showAd(callback) {
-        clearInterval(timerInterval);
-        const box = document.getElementById('ad-box');
-        box.classList.remove('hidden');
-        box.innerHTML = ads.type === 'image' ? `<img src="${ads.url}">` : `<video src="${ads.url}" autoplay muted playsinline></video>`;
-        setTimeout(() => { box.classList.add('hidden'); callback(); }, 5000);
+    function showQ() {
+        document.getElementById('step-quiz').classList.remove('hidden');
+        const q = qPool[idx];
+        document.getElementById('progress-fill').style.width = ((idx / qPool.length) * 100) + "%";
+        document.getElementById('qText').innerText = q.text;
+        document.getElementById('tA').innerText = q.options[0];
+        document.getElementById('tB').innerText = q.options[1];
+        document.getElementById('tC').innerText = q.options[2];
+        document.getElementById('tD').innerText = q.options[3];
+        startTimer();
     }
 
     function startTimer() {
@@ -209,91 +251,44 @@
         const bar = document.getElementById('timer-bar');
         bar.style.width = "100%";
         bar.classList.remove('hidden');
-        
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             timeLeft--;
             document.getElementById('seconds').innerText = timeLeft;
             bar.style.width = (timeLeft / 15 * 100) + "%";
-            
-            if(timeLeft <= 0) {
-                clearInterval(timerInterval);
-                submitAns('TIMEOUT');
-            }
+            if(timeLeft <= 0) { clearInterval(timerInterval); submitAns('TIMEOUT'); }
         }, 1000);
-    }
-
-    function showQ() {
-        document.getElementById('step-quiz').classList.remove('hidden');
-        const q = qPool[idx];
-        
-        document.getElementById('progress-fill').style.width = ((idx / qPool.length) * 100) + "%";
-        
-        document.getElementById('qText').innerText = q.text;
-        document.getElementById('tA').innerText = q.options[0];
-        document.getElementById('tB').innerText = q.options[1];
-        document.getElementById('tC').innerText = q.options[2];
-        document.getElementById('tD').innerText = q.options[3];
-        
-        startTimer();
     }
 
     async function submitAns(letter) {
         clearInterval(timerInterval);
         if(letter === qPool[idx].correct) score++;
         idx++;
-
-        if(idx === 10 && ads && ads.pos === 'mid') {
-            document.getElementById('step-quiz').classList.add('hidden');
-            document.getElementById('timer-bar').classList.add('hidden');
-            showAd(showQ);
-        } else if(idx < qPool.length) {
-            showQ();
-        } else {
-            finish();
-        }
+        if(idx < qPool.length) showQ(); else finish();
     }
 
-    async function finish() {
-        clearInterval(timerInterval);
+    function finish() {
         document.getElementById('step-quiz').classList.add('hidden');
         document.getElementById('timer-bar').classList.add('hidden');
-        
         const pct = Math.round((score / qPool.length) * 100);
         document.getElementById('finalScore').innerText = pct;
         document.getElementById('step-res').classList.remove('hidden');
-
-        await db.collection("results").add({
+        
+        db.collection("results").add({
             name: document.getElementById('uName').value,
             phone: document.getElementById('uPhone').value,
             score: pct,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
-        if(ads && ads.pos === 'end') showAd(() => {});
     }
-</script>
 
-<script>
-  // --- PWA SERVICE WORKER REGISTRATION ---
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      // ስሙ sw.js መሆኑን እና htdocs ውስጥ መኖሩን እርግጠኛ ይሁኑ
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => {
-          console.log('Service Worker Registered!');
-          // አዲስ ለውጥ ካለ እንዲያነብ
-          reg.update();
-        })
-        .catch(err => console.error('Registration failed:', err));
-    });
-  }
-
-  // ባነሩ መጥቶ እንዳይጠፋ የሚከላከል (Persistent Banner)
-  let deferredPrompt;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-  });
+    // --- FACEBOOK SHARE FUNCTION ---
+    function shareToFB() {
+        const score = document.getElementById('finalScore').innerText;
+        const url = encodeURIComponent("https://endu-lab.github.io/Bible_Quize/");
+        const text = encodeURIComponent(`እኔ በቃል የመጽሐፍ ቅዱስ ፈተና ${score}% አምጥቻለሁ! እናንተስ እውቀታችሁን መፈተን ትፈልጋላችሁ?`);
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
+    }
 </script>
 
 </body>
