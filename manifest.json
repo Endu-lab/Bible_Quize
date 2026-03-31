@@ -1,25 +1,21 @@
 {
   "short_name": "ቃል",
-  "name": "ቃል - Bible Quiz",
-  "description": "የመጽሐፍ ቅዱስ የጥያቄና መልስ ውድድር",
+  "name": "ቃል - የመጽሐፍ ቅዱስ ፈተና",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192.png/4a90e2/ffffff?text=Qal",
-      "sizes": "192x192",
+      "src": "icon-192.png",
       "type": "image/png",
-      "purpose": "any"
+      "sizes": "192x192"
     },
     {
-      "src": "https://via.placeholder.com/512.png/4a90e2/ffffff?text=Qal",
-      "sizes": "512x512",
+      "src": "icon-512.png",
       "type": "image/png",
-      "purpose": "any"
+      "sizes": "512x512"
     }
   ],
   "start_url": "./index.html",
+  "background_color": "#2c3e50",
   "display": "standalone",
-  "orientation": "portrait",
   "scope": "./",
-  "background_color": "#4a90e2",
-  "theme_color": "#4a90e2"
+  "theme_color": "#2c3e50"
 }
