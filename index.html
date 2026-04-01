@@ -12,82 +12,101 @@
     <meta property="og:description" content="የመጽሐፍ ቅዱስ እውቀትዎን ይፈትሹ! ተሳትፈው ሽልማቶችን ያሸንፉ።">
     <meta property="og:image" content="https://endu-lab.github.io/Bible_Quize/icon-512.png">
     <meta property="og:url" content="https://endu-lab.github.io/Bible_Quize/">
-    <meta property="og:type" content="website">
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
         :root {
-            --primary: #1a2a6c; /* ጥልቅ ሰማያዊ */
-            --accent: #f39c12;  /* ወርቃማ */
-            --bg: #f8f9fa;
-            --text: #2c3e50;
+            --primary: #1a2a6c;
+            --accent: #f39c12;
+            --bg: #0f2027; /* ጠቆር ያለ ጀርባ ለአኒሜሽኑ */
             --white: #ffffff;
         }
 
         body { 
             font-family: 'Segoe UI', 'Nyala', sans-serif; 
-            background: var(--bg);
-            background-image: radial-gradient(#d1d9e6 0.8px, transparent 0.8px);
-            background-size: 30px 30px;
             margin: 0; padding: 15px;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
-            color: var(--text);
+            overflow-x: hidden;
+            /* የሚንቀሳቀስ የቪዲዮ ስታይል ጀርባ (Animated Gradient) */
+            background: linear-gradient(-45deg, #1a2a6c, #2c3e50, #0f2027, #203a43);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .container { 
-            background: var(--white); 
+            background: rgba(255, 255, 255, 0.98); 
             width: 100%; max-width: 400px; 
-            padding: 45px 30px; border-radius: 25px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08); 
+            padding: 40px 30px; border-radius: 30px; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3); 
             border-top: 8px solid var(--primary);
             text-align: center; position: relative; overflow: hidden;
+            backdrop-filter: blur(10px);
         }
+
+        /* የሚንቀሳቀስ የማስታወቂያ ቦታ (Animated Ad Place) */
+        .ad-banner {
+            background: linear-gradient(90deg, #f39c12, #e67e22, #f39c12);
+            background-size: 200% auto;
+            color: white; padding: 12px; border-radius: 15px;
+            margin-bottom: 25px; font-weight: bold; font-size: 0.9em;
+            animation: shine 3s linear infinite;
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+            cursor: pointer;
+        }
+
+        @keyframes shine { to { background-position: 200% center; } }
 
         #timer-bar { 
             height: 6px; background: var(--accent); width: 100%; 
             position: absolute; top: 0; left: 0; transition: width 1s linear; 
         }
 
-        .app-logo { font-size: 50px; margin-bottom: 10px; }
-
-        h1 { color: var(--primary); font-size: 2.5em; margin: 0; font-weight: 800; }
-        p.subtitle { color: #95a5a6; font-size: 0.9em; margin-bottom: 30px; }
+        h1 { color: var(--primary); font-size: 2.6em; margin: 0; font-weight: 900; letter-spacing: 2px; }
+        p.subtitle { color: #7f8c8d; margin-bottom: 20px; font-size: 0.95em; }
 
         .hidden { display: none; }
 
         input { 
-            width: 100%; padding: 16px; margin: 10px 0; 
+            width: 100%; padding: 16px; margin: 12px 0; 
             border-radius: 12px; border: 2px solid #edf2f7; 
-            box-sizing: border-box; font-size: 16px; outline: none;
+            box-sizing: border-box; font-size: 16px; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: var(--primary); }
+        input:focus { border-color: var(--primary); background: #fcfdfe; }
 
         .btn-start { 
             width: 100%; padding: 18px; 
             background: linear-gradient(135deg, var(--primary), #2c3e50);
             color: white; border: none; border-radius: 12px; 
-            font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 10px;
+            font-weight: bold; cursor: pointer; font-size: 18px; margin-top: 15px;
+            transition: 0.3s; box-shadow: 0 10px 20px rgba(26, 42, 108, 0.2);
         }
+        .btn-start:hover { transform: translateY(-2px); }
 
         .choice-btn { 
             width: 100%; padding: 16px; margin: 12px 0; 
-            border: 2px solid #f1f3f5; border-radius: 15px; 
+            border: 2px solid #f1f3f5; border-radius: 18px; 
             background: var(--white); font-weight: 600; 
-            display: flex; align-items: center; cursor: pointer; text-align: left;
+            display: flex; align-items: center; cursor: pointer; transition: 0.2s;
         }
-        .choice-btn:hover { border-color: var(--accent); background: #fffcf5; }
+        .choice-btn:hover { border-color: var(--accent); background: #fffcf5; transform: scale(1.02); }
 
         .choice-label {
             background: var(--primary); color: white;
-            width: 32px; height: 32px; border-radius: 8px; 
+            width: 35px; height: 35px; border-radius: 10px; 
             display: flex; align-items: center; justify-content: center;
             margin-right: 15px; font-size: 14px;
         }
 
-        #progress-bg { height: 6px; background: #eee; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
+        #progress-bg { height: 8px; background: #eee; border-radius: 4px; margin-bottom: 25px; overflow: hidden; }
         #progress-fill { height: 100%; background: var(--accent); width: 0%; transition: 0.4s; }
     </style>
 </head>
@@ -95,9 +114,13 @@
 
 <div class="container">
     <div id="timer-bar" class="hidden"></div>
-    <div class="app-logo">📖</div>
+    
+    <div class="ad-banner" onclick="window.open('https://yourlink.com', '_blank')">
+        ✨ ቃሉን ያጥኑ፡ ሽልማቶችን ያሸንፉ! ✨
+    </div>
+
     <h1>ቃል</h1>
-    <p class="subtitle">የመጽሐፍ ቅዱስ ፈተና</p>
+    <p class="subtitle">የመጽሐፍ ቅዱስ እውቀት መፈተኛ</p>
 
     <div id="step-reg">
         <input type="text" id="uName" placeholder="ሙሉ ስም (Full Name)">
@@ -107,7 +130,7 @@
 
     <div id="step-quiz" class="hidden">
         <div id="progress-bg"><div id="progress-fill"></div></div>
-        <div id="qText" style="font-weight:bold; font-size:1.3em; margin-bottom:20px; min-height: 60px;"></div>
+        <div id="qText" style="font-weight:bold; font-size:1.3em; margin-bottom:25px; min-height: 50px;"></div>
         <div id="options-container">
             <button class="choice-btn" onclick="submitAns('A')"><div class="choice-label">ሀ</div> <span id="tA"></span></button>
             <button class="choice-btn" onclick="submitAns('B')"><div class="choice-label">ለ</div> <span id="tB"></span></button>
@@ -117,9 +140,8 @@
     </div>
 
     <div id="step-res" class="hidden">
-        <h2 style="color:var(--accent);">ተጠናቀቀ!</h2>
-        <p>የእርስዎ ውጤት</p>
-        <div style="font-size: 4.5em; font-weight:900; color: var(--primary);"><span id="finalScore">0</span>%</div>
+        <h2 style="color:var(--primary); margin:0;">ውጤትዎ ተመዝግቧል!</h2>
+        <div style="font-size: 5em; font-weight:900; color: var(--accent); margin: 10px 0;"><span id="finalScore">0</span>%</div>
         <button class="btn-start" onclick="location.reload()">እንደገና ተጫወት</button>
         <button class="btn-start" style="background:#1877F2;" onclick="shareToFB()">ፌስቡክ ላይ አጋራ</button>
     </div>
@@ -176,39 +198,3 @@
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             timeLeft--;
-            bar.style.width = (timeLeft/15*100) + "%";
-            if(timeLeft <= 0) submitAns('TIMEOUT');
-        }, 1000);
-    }
-
-    function submitAns(letter) {
-        clearInterval(timerInterval);
-        if(letter === qPool[idx].correct) score++;
-        idx++;
-        if(idx < qPool.length) showQ(); else finish();
-    }
-
-    function finish() {
-        document.getElementById('step-quiz').classList.add('hidden');
-        document.getElementById('timer-bar').classList.add('hidden');
-        const pct = Math.round((score/qPool.length)*100);
-        document.getElementById('finalScore').innerText = pct;
-        document.getElementById('step-res').classList.remove('hidden');
-        
-        db.collection("results").add({
-            name: document.getElementById('uName').value,
-            phone: document.getElementById('uPhone').value,
-            score: pct,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-    }
-
-    function shareToFB() {
-        const scoreVal = document.getElementById('finalScore').innerText;
-        const url = encodeURIComponent("https://endu-lab.github.io/Bible_Quize/");
-        const text = encodeURIComponent(`እኔ በቃል የመጽሐፍ ቅዱስ ፈተና ${scoreVal}% አምጥቻለሁ! እናንተስ እውቀታችሁን መፈተን ትፈልጋላችሁ?`);
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
-    }
-</script>
-</body>
-</html>
