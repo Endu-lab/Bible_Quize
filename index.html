@@ -27,24 +27,55 @@
             color: #333; overflow-x: hidden;
         }
 
-        /* Ad Slots */
-        .ad-box { position: fixed; background: #f0f4f7; overflow: hidden; z-index: 5; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-        .ad-top { top: 5px; width: 95%; height: 60px; left: 2.5%; }
-        .ad-bottom { bottom: 5px; width: 95%; height: 60px; left: 2.5%; }
-        .ad-side { width: 140px; height: 500px; top: 50%; transform: translateY(-50%); }
-        .ad-left { left: 15px; }
-        .ad-right { right: 15px; }
-        @media (max-width: 1150px) { .ad-side { display: none; } }
-
-        .container { 
-            background: white; width: 90%; max-width: 500px; 
-            padding: 35px; border-radius: 25px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15); 
-            text-align: center; position: relative; z-index: 10;
-            border: 5px solid white;
+        /* Ad Slots - Fixed Visibility and Layout */
+        .ad-box { 
+            position: fixed; 
+            background: #ffffff; 
+            overflow: hidden; 
+            z-index: 9999; /* Ensures ads stay on top */
+            border: 2px solid rgba(26, 42, 108, 0.2); 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
-        .ad-media { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.3s; }
+        .ad-top { top: 10px; width: 90%; height: 70px; left: 5%; }
+        .ad-bottom { bottom: 10px; width: 90%; height: 70px; left: 5%; }
+        
+        .ad-side { 
+            width: 180px; /* Increased width */
+            height: 75vh; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+        
+        .ad-left { left: 25px; }
+        .ad-right { right: 25px; }
+
+        /* Media styling to ensure full coverage */
+        .ad-media { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* Fills the box completely */
+            display: block;
+        }
+
+        @media (max-width: 1250px) { .ad-side { display: none; } }
+
+        .container { 
+            background: white; 
+            width: 90%; 
+            max-width: 500px; 
+            padding: 35px; 
+            border-radius: 25px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15); 
+            text-align: center; 
+            position: relative; 
+            z-index: 10;
+            border: 5px solid white;
+        }
 
         #qText {
             font-weight: bold; font-size: 1.3em; background: var(--light-sky);
@@ -74,7 +105,7 @@
 
         #interstitial-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.96); z-index: 2000;
+            background: rgba(0,0,0,0.96); z-index: 10000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
         }
 
@@ -155,7 +186,7 @@
             : `<img src="${adData.img}" class="ad-media">`;
         
         return (adData.link && adData.link !== "#") 
-            ? `<a href="${adData.link}" target="_blank">${mediaHtml}</a>` 
+            ? `<a href="${adData.link}" target="_blank" style="width:100%; height:100%; display:block;">${mediaHtml}</a>` 
             : mediaHtml;
     }
 
