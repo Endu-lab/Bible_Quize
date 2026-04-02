@@ -5,241 +5,169 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ቃል (Qal) - Bible Quiz</title>
     
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1a2a6c">
-
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
-        :root {
-            --primary: #1a2a6c;
-            --accent: #f39c12;
-            --bg: #0f2027;
-            --white: #ffffff;
-        }
-
+        :root { --primary: #1a2a6c; --accent: #f39c12; }
         body { 
-            font-family: 'Segoe UI', 'Nyala', sans-serif; 
-            margin: 0; padding: 0;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(-45deg, #1a2a6c, #2c3e50, #0f2027, #203a43);
-            background-size: 400% 400%;
-            animation: gradientBG 12s ease infinite;
-            padding-bottom: 60px; /* ለግርጌ ማስታወቂያ ቦታ */
+            font-family: 'Segoe UI', 'Nyala', sans-serif; margin: 0; padding: 0;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            background: #0f2027; color: #333; overflow-x: hidden;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Ad Slots */
+        .ad-box { position: fixed; background: #000; overflow: hidden; z-index: 5; border: 1px solid #333; }
+        .ad-top { top: 0; width: 100%; height: 55px; left: 0; }
+        .ad-bottom { bottom: 0; width: 100%; height: 55px; left: 0; }
+        .ad-side { width: 130px; height: 500px; top: 50%; transform: translateY(-50%); }
+        .ad-left { left: 10px; }
+        .ad-right { right: 10px; }
+        @media (max-width: 1000px) { .ad-side { display: none; } }
+
+        /* Interstitial Ad */
+        #interstitial-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.96); z-index: 2000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* --- Side Ads (ለኮምፒውተር) --- */
-        .ad-sidebar {
-            position: fixed; top: 50%; transform: translateY(-50%);
-            width: 140px; height: 500px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px dashed rgba(255, 255, 255, 0.2);
-            display: flex; align-items: center; justify-content: center;
-            color: rgba(255, 255, 255, 0.5); font-size: 12px; z-index: 5;
-            border-radius: 15px;
-        }
-        .ad-left { left: 20px; }
-        .ad-right { right: 20px; }
-
-        @media (max-width: 1100px) { .ad-sidebar { display: none; } }
-
-        /* --- Bottom Ad (ለሞባይል) --- */
-        .ad-bottom-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            height: 50px; background: var(--accent);
-            color: white; display: flex; align-items: center;
-            overflow: hidden; white-space: nowrap; z-index: 100;
-            box-shadow: 0 -2px 15px rgba(0,0,0,0.3);
-        }
-        .ad-content-scroll {
-            display: inline-block; padding-left: 100%;
-            animation: scrollText 20s linear infinite; font-weight: bold;
-        }
-        @keyframes scrollText {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
-        }
-
-        /* --- Main Container --- */
         .container { 
-            background: rgba(255, 255, 255, 0.98); 
-            width: 90%; max-width: 400px; 
-            padding: 40px 30px; border-radius: 30px; 
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3); 
-            border-top: 8px solid var(--primary);
-            text-align: center; position: relative; overflow: hidden;
-            backdrop-filter: blur(10px); z-index: 10;
+            background: white; width: 90%; max-width: 380px; 
+            padding: 30px; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); 
+            text-align: center; position: relative; z-index: 10;
         }
-
-        #timer-bar { 
-            height: 6px; background: var(--accent); width: 100%; 
-            position: absolute; top: 0; left: 0; transition: width 1s linear; 
-        }
-
-        h1 { color: var(--primary); font-size: 2.4em; margin: 0; font-weight: 900; }
-        p.subtitle { color: #7f8c8d; margin-bottom: 25px; font-size: 0.9em; }
-
+        .ad-img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         .hidden { display: none; }
-
-        input { 
-            width: 100%; padding: 15px; margin: 10px 0; 
-            border-radius: 12px; border: 2px solid #edf2f7; 
-            box-sizing: border-box; font-size: 16px; outline: none;
-        }
-
-        .btn-start { 
-            width: 100%; padding: 18px; 
-            background: linear-gradient(135deg, var(--primary), #2c3e50);
-            color: white; border: none; border-radius: 12px; 
-            font-weight: bold; cursor: pointer; font-size: 17px; margin-top: 15px;
-        }
-
-        .choice-btn { 
-            width: 100%; padding: 15px; margin: 10px 0; 
-            border: 2px solid #f1f3f5; border-radius: 15px; 
-            background: var(--white); font-weight: 600; 
-            display: flex; align-items: center; cursor: pointer; transition: 0.2s;
-        }
-        .choice-btn:hover { border-color: var(--accent); background: #fffcf5; }
-
-        .choice-label {
-            background: var(--primary); color: white;
-            width: 30px; height: 30px; border-radius: 8px; 
-            display: flex; align-items: center; justify-content: center;
-            margin-right: 15px; font-size: 13px;
-        }
-
-        #progress-bg { height: 6px; background: #eee; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
-        #progress-fill { height: 100%; background: var(--accent); width: 0%; transition: 0.4s; }
     </style>
 </head>
 <body>
 
-    <div class="ad-sidebar ad-left">የግራ ማስታወቂያ</div>
-    <div class="ad-sidebar ad-right">የቀኝ ማስታወቂያ</div>
+    <div class="ad-box ad-top" id="slot-top"></div>
+    <div class="ad-box ad-bottom" id="slot-bottom"></div>
+    <div class="ad-box ad-side ad-left" id="slot-left"></div>
+    <div class="ad-box ad-side ad-right" id="slot-right"></div>
 
-    <div class="ad-bottom-bar">
-        <div class="ad-content-scroll">🔥 በየሳምንቱ አዳዲስ ጥያቄዎች እና ሽልማቶች! ጓደኞችዎን ይጋብዙ። 🔥</div>
+    <div id="interstitial-overlay">
+        <p id="timer-text" style="color:white; font-size:1.1em;">ውጤትዎ እየተዘጋጀ ነው... (3)</p>
+        <div id="interstitial-content" style="width:85%; max-width:300px; height:400px; margin-top:15px;"></div>
     </div>
 
     <div class="container">
-        <div id="timer-bar" class="hidden"></div>
-        <h1>ቃል</h1>
-        <p class="subtitle">የመጽሐፍ ቅዱስ እውቀት መፈተኛ</p>
-
+        <h1 style="color:var(--primary); margin:0;">ቃል</h1>
         <div id="step-reg">
-            <input type="text" id="uName" placeholder="ሙሉ ስም">
-            <input type="tel" id="uPhone" placeholder="ስልክ ቁጥር">
-            <button class="btn-start" onclick="startApp()">መፈተን ጀምር ➔</button>
+            <p>የመጽሐፍ ቅዱስ ፈተና</p>
+            <input type="text" id="uName" placeholder="ሙሉ ስም" style="width:100%; padding:12px; margin-bottom:10px; border-radius:5px; border:1px solid #ccc;">
+            <input type="tel" id="uPhone" placeholder="ስልክ" style="width:100%; padding:12px; margin-bottom:15px; border-radius:5px; border:1px solid #ccc;">
+            <button class="btn" onclick="startApp()">መፈተን ጀምር</button>
         </div>
 
         <div id="step-quiz" class="hidden">
-            <div id="progress-bg"><div id="progress-fill"></div></div>
-            <div id="qText" style="font-weight:bold; font-size:1.2em; margin-bottom:20px;"></div>
-            <div id="options-container">
-                <button class="choice-btn" onclick="submitAns('A')"><div class="choice-label">ሀ</div> <span id="tA"></span></button>
-                <button class="choice-btn" onclick="submitAns('B')"><div class="choice-label">ለ</div> <span id="tB"></span></button>
-                <button class="choice-btn" onclick="submitAns('C')"><div class="choice-label">ሐ</div> <span id="tC"></span></button>
-                <button class="choice-btn" onclick="submitAns('D')"><div class="choice-label">መ</div> <span id="tD"></span></button>
-            </div>
+            <p id="qText" style="font-weight:bold; font-size:1.1em;"></p>
+            <div id="options-container"></div>
         </div>
 
         <div id="step-res" class="hidden">
-            <h2 style="color:var(--primary);">ተጠናቀቀ!</h2>
-            <div style="font-size: 4.5em; font-weight:900; color: var(--accent);"><span id="finalScore">0</span>%</div>
-            <button class="btn-start" onclick="location.reload()">እንደገና ተጫወት</button>
-            <button class="btn-start" style="background:#1877F2;" onclick="shareToFB()">ፌስቡክ ላይ አጋራ</button>
+            <h2>ውጤት: <span id="finalScore">0</span>%</h2>
+            <button class="btn" onclick="location.reload()">እንደገና ተጫወት</button>
         </div>
     </div>
 
 <script>
+    // --- ያገኘኸውን መረጃ እዚህ ጋር አስገብቼዋለሁ ---
     const firebaseConfig = {
         apiKey: "AIzaSyCLiqB5FqygKqPwLlctFsvQBP58fHontnc",
         authDomain: "biblicallanguagequizbot.firebaseapp.com",
         projectId: "biblicallanguagequizbot",
         storageBucket: "biblicallanguagequizbot.firebasestorage.app",
         messagingSenderId: "1040255793336",
-        appId: "1:1040255793336:web:aea95b172a79204d57dc4d"
+        appId: "1:1040255793336:web:83444c54330769d257dc4d"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let qPool = [], idx = 0, score = 0;
-    let timerInterval, timeLeft = 15;
+    let qPool = [], adsList = [], interstitialData = null;
+    let idx = 0, score = 0;
 
     async function startApp() {
-        const n = document.getElementById('uName').value;
-        const p = document.getElementById('uPhone').value;
-        if(!n || !p) return alert("ስም እና ስልክ ያስገቡ!");
+        if(!document.getElementById('uName').value) return alert("ስም ያስገቡ!");
 
         try {
-            const snap = await db.collection("questions").get();
-            snap.forEach(doc => qPool.push(doc.data()));
-            qPool = qPool.sort(() => 0.5 - Math.random()).slice(0, 10);
+            // 1. ማስታወቂያዎችን ከ Dashboard መጫን
+            const configSnap = await db.collection("ads").doc("config").get();
+            if(configSnap.exists) adsList = configSnap.data().list;
+
+            const intSnap = await db.collection("ads").doc("interstitial").get();
+            if(intSnap.exists) interstitialData = intSnap.data();
+
+            // 2. ጥያቄዎችን መጫን
+            const qSnap = await db.collection("questions").get();
+            qSnap.forEach(doc => qPool.push(doc.data()));
+            qPool = qPool.sort(() => 0.5 - Math.random()).slice(0, 5);
+
             document.getElementById('step-reg').classList.add('hidden');
             showQ();
-        } catch(e) { alert("ኢንተርኔት የለም!"); }
+        } catch(e) { console.log(e); alert("ዳታ መጫን አልተቻለም!"); }
     }
 
-    function showQ() {
-        document.getElementById('step-quiz').classList.remove('hidden');
-        const q = qPool[idx];
-        document.getElementById('qText').innerText = q.text;
-        document.getElementById('tA').innerText = q.options[0];
-        document.getElementById('tB').innerText = q.options[1];
-        document.getElementById('tC').innerText = q.options[2];
-        document.getElementById('tD').innerText = q.options[3];
-        document.getElementById('progress-fill').style.width = ((idx/qPool.length)*100) + "%";
-        startTimer();
-    }
-
-    function startTimer() {
-        timeLeft = 15;
-        const bar = document.getElementById('timer-bar');
-        bar.classList.remove('hidden');
-        bar.style.width = "100%";
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            bar.style.width = (timeLeft/15*100) + "%";
-            if(timeLeft <= 0) submitAns('TIMEOUT');
-        }, 1000);
-    }
-
-    function submitAns(letter) {
-        clearInterval(timerInterval);
-        if(letter === qPool[idx].correct) score++;
-        idx++;
-        if(idx < qPool.length) showQ(); else finish();
-    }
-
-    function finish() {
-        document.getElementById('step-quiz').classList.add('hidden');
-        document.getElementById('timer-bar').classList.add('hidden');
-        const pct = Math.round((score/qPool.length)*100);
-        document.getElementById('finalScore').innerText = pct;
-        document.getElementById('step-res').classList.remove('hidden');
-        db.collection("results").add({
-            name: document.getElementById('uName').value,
-            phone: document.getElementById('uPhone').value,
-            score: pct,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    function updateAds() {
+        if(adsList.length === 0) return;
+        const slots = ['slot-top', 'slot-bottom', 'slot-left', 'slot-right'];
+        slots.forEach(slotId => {
+            const randomAd = adsList[Math.floor(Math.random() * adsList.length)];
+            document.getElementById(slotId).innerHTML = `
+                <a href="${randomAd.link}" target="_blank">
+                    <img src="${randomAd.img}" class="ad-img">
+                </a>`;
         });
     }
 
-    function shareToFB() {
-        const s = document.getElementById('finalScore').innerText;
-        const u = encodeURIComponent("https://endu-lab.github.io/Bible_Quize/");
-        const t = encodeURIComponent(`እኔ በቃል ፈተና ${s}% አምጥቻለሁ! እናንተስ?`);
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${u}&quote=${t}`, '_blank');
+    function showQ() {
+        updateAds();
+        document.getElementById('step-quiz').classList.remove('hidden');
+        const q = qPool[idx];
+        document.getElementById('qText').innerText = q.text;
+        
+        let html = '';
+        q.options.forEach((opt, i) => {
+            html += `<button class="btn" style="background:#f9f9f9; color:black; border:1px solid #ddd;" onclick="submitAns('${String.fromCharCode(65+i)}')">${opt}</button>`;
+        });
+        document.getElementById('options-container').innerHTML = html;
+    }
+
+    function submitAns(ans) {
+        if(ans === qPool[idx].correct) score++;
+        idx++;
+        if(idx < qPool.length) showQ(); else showInterstitial();
+    }
+
+    function showInterstitial() {
+        document.getElementById('step-quiz').classList.add('hidden');
+        if(!interstitialData) return finish();
+
+        const overlay = document.getElementById('interstitial-overlay');
+        overlay.style.display = 'flex';
+        document.getElementById('interstitial-content').innerHTML = `
+            <a href="${interstitialData.link}" target="_blank">
+                <img src="${interstitialData.img}" style="width:100%; height:100%; border-radius:10px; object-fit:cover;">
+            </a>`;
+
+        let timeLeft = 3;
+        const timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-text').innerText = `ውጤትዎ እየተዘጋጀ ነው... (${timeLeft})`;
+            if(timeLeft <= 0) {
+                clearInterval(timer);
+                overlay.style.display = 'none';
+                finish();
+            }
+        }, 1000);
+    }
+
+    function finish() {
+        document.getElementById('finalScore').innerText = Math.round((score/qPool.length)*100);
+        document.getElementById('step-res').classList.remove('hidden');
     }
 </script>
 </body>
