@@ -16,75 +16,61 @@
             --primary: #1a2a6c; 
             --accent: #f39c12; 
             --sky-blue: #87CEEB; 
-            --light-sky: #f0f8ff;
-            --success: #27ae60;
             --error: #e74c3c;
+            --white: #ffffff;
         }
 
         body { 
             font-family: 'Segoe UI', 'Nyala', sans-serif; 
             margin: 0; padding: 0;
-            background: linear-gradient(180deg, var(--sky-blue) 0%, var(--light-sky) 100%); 
-            height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(180deg, var(--sky-blue) 0%, #f0f8ff 100%); 
+            height: 100vh; overflow: hidden; display: flex; flex-direction: column; align-items: center;
         }
 
-        /* 1. Header & Bold Logo (Centered) */
-        .app-header {
-            position: fixed; top: 0; width: 100%; height: 80px;
-            background: white; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; 
-            z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        /* 1. Centered Bold Logo */
+        .header-nav {
+            width: 100%; height: 90px; background: var(--white);
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000;
         }
-
-        .app-header h1 {
-            color: var(--primary); margin: 0; font-size: 2.8em; font-weight: 900;
-            letter-spacing: 2px;
+        .header-nav h1 {
+            color: var(--primary); font-size: 3.5em; font-weight: 900; margin: 0;
         }
 
         /* 2. Moving News Ticker */
-        .news-ticker {
-            position: fixed; top: 80px; width: 100%; background: var(--primary);
-            color: white; overflow: hidden; white-space: nowrap; padding: 6px 0; z-index: 900;
-            font-size: 0.9em;
+        .ticker-wrap {
+            width: 100%; background: var(--primary); color: white;
+            padding: 8px 0; overflow: hidden; white-space: nowrap;
         }
-        .news-ticker p { display: inline-block; animation: ticker 18s linear infinite; margin: 0; }
+        .ticker-wrap p { display: inline-block; animation: ticker 20s linear infinite; margin: 0; font-weight: bold; }
         @keyframes ticker { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
-        /* 3. Main Card Style */
-        .container { 
-            background: white; width: 92%; max-width: 400px; 
-            padding: 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            text-align: center; position: relative; z-index: 100;
-            margin-top: 100px;
+        /* 3. Main Card Container */
+        .app-container { 
+            background: var(--white); width: 90%; max-width: 420px; 
+            padding: 30px; border-radius: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            text-align: center; margin-top: 30px; position: relative;
         }
 
-        /* Animal & UI */
-        .animal-icon { font-size: 55px; margin-bottom: 10px; }
-        #timer-display { 
-            font-weight: 900; color: var(--error); font-size: 1.5em; 
-            background: #fff0f0; border: 2px solid var(--error);
-            width: 60px; height: 60px; border-radius: 50%;
+        #timer-circle { 
+            width: 70px; height: 70px; border: 5px solid #eee; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 15px;
+            margin: 0 auto 20px; font-size: 1.8em; font-weight: 900; color: var(--error);
         }
 
-        /* Input & Buttons */
-        input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 2px solid #eee; box-sizing: border-box; font-size: 1em; outline: none; }
-        input:focus { border-color: var(--primary); }
-        .btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; cursor: pointer; font-weight: bold; font-size: 1.1em; margin-top: 10px; transition: 0.2s; }
-        .btn:active { transform: scale(0.97); }
-        .opt-btn { background: #ffffff; color: #333; text-align: left; display: flex; align-items: center; border: 2px solid #eee; }
-        .label-box { background: var(--primary); color: white; min-width: 34px; height: 34px; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .animal-status { font-size: 55px; margin-bottom: 10px; }
+
+        /* Buttons & Options */
+        .btn { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 1.1em; margin-top: 12px; transition: 0.2s; }
+        .opt-btn { background: #fdfdfd; color: #333; text-align: left; border: 2px solid #eee; display: flex; align-items: center; }
+        .opt-btn:hover { background: #f0f7ff; border-color: var(--sky-blue); }
+        .label { background: var(--primary); color: white; min-width: 35px; height: 35px; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; }
 
         /* Ads Overlay */
-        #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-
-        /* Reward Zone */
-        #roll-zone { display: none; padding: 20px; }
-        .gift-box { font-size: 90px; cursor: pointer; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.1);} 100% {transform: scale(1);} }
+        #ad-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; }
 
         .hidden { display: none; }
+        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 2px solid #ddd; outline: none; font-size: 1.1em; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -92,45 +78,47 @@
     <audio id="snd-correct" src="https://raw.githubusercontent.com/Endu-lab/Bible_Quize/main/assets/sounds/correct.mp3"></audio>
     <audio id="snd-wrong" src="https://raw.githubusercontent.com/Endu-lab/Bible_Quize/main/assets/sounds/wrong.mp3"></audio>
 
-    <div class="app-header">
+    <div class="header-nav">
         <h1>ቃል</h1>
     </div>
 
-    <div class="news-ticker">
-        <p>🌟 እንኳን ደስ አለዎት! አዳዲስ አሸናፊዎች እየተመዘገቡ ነው። • ጓደኞችዎን ይጋብዙ እና ተጨማሪ የዕጣ ዕድሎችን ያግኙ! • ቃሉን ይፈትኑ ይሸለሙ! 🌟</p>
+    <div class="ticker-wrap">
+        <p>🌟 እንኳን ደስ አለዎት! አዳዲስ አሸናፊዎች በዕጣ እየተመረጡ ነው። • ጓደኞችዎን ይጋብዙ እና ተጨማሪ ዕድል ያግኙ! • ቃሉን ይፈትኑ፣ እውቀትዎን ያሳድጉ! 🌟</p>
     </div>
 
-    <div id="ad-overlay">
-        <h3 style="color:var(--primary);">ማስታወቂያ</h3>
-        <div id="ad-box" style="width:320px; height:320px; background:#f5f5f5; margin:20px 0; border-radius:20px; overflow:hidden; border:1px solid #ddd;"></div>
-        <p id="ad-timer">እባክዎ ለ 5 ሰከንድ ይጠብቁ...</p>
-        <button id="close-ad-btn" class="btn" style="width:220px; display:none;" onclick="hideAd()">ቀጥል ➔</button>
+    <div id="ad-screen">
+        <h2 style="color:var(--primary);">ማስታወቂያ</h2>
+        <div id="ad-box" style="width:320px; height:320px; background:#f0f0f0; margin:20px 0; border-radius:20px; display:flex; align-items:center; justify-content:center; overflow:hidden;"></div>
+        <p id="ad-msg">እባክዎ ለ 5 ሰከንድ ይጠብቁ...</p>
+        <button id="ad-close-btn" class="btn" style="width:200px; display:none;" onclick="closeAd()">ቀጥል ➔</button>
     </div>
 
-    <div class="container" id="app-card">
-        <div class="animal-icon" id="pet">🐑</div>
+    <div class="app-container" id="main-content">
+        <div class="animal-status" id="pet-emoji">🐑</div>
 
-        <div id="reg-screen">
+        <div id="start-step">
             <h3 style="color:var(--primary);">የመግቢያ መረጃ</h3>
             <input type="text" id="uName" placeholder="ሙሉ ስም">
             <input type="tel" id="uPhone" placeholder="ስልክ ቁጥር">
-            <button class="btn" onclick="initApp()">መፈተን ጀምር ➔</button>
+            <button class="btn" onclick="startApp()">መፈተን ጀምር ➔</button>
         </div>
 
-        <div id="quiz-screen" class="hidden">
-            <div id="timer-display">20</div>
-            <p id="qText" style="font-weight:bold; font-size:1.15em; min-height:70px;"></p>
-            <div id="options-list"></div>
+        <div id="quiz-step" class="hidden">
+            <div id="timer-circle">20</div>
+            <p id="qText" style="font-weight:bold; font-size:1.2em; min-height:80px;"></p>
+            <div id="opt-list"></div>
         </div>
 
-        <div id="result-screen" class="hidden">
-            <h2 style="color:var(--primary);">የፈተና ውጤት</h2>
-            <h1 id="score-val" style="color:var(--accent); font-size:4em; margin:10px 0;">0%</h1>
-            <div id="roll-zone">
-                <p style="font-weight:bold;">ድንቅ ውጤት! ዕጣዎን ይሞክሩ</p>
-                <div class="gift-box" onclick="startRoll()">🎁</div>
-                <p id="roll-status" style="color:var(--success); font-weight:bold;">ሳጥኑን ይጫኑ!</p>
+        <div id="result-step" class="hidden">
+            <h2 style="color:var(--primary);">የፈተና ውጤትዎ</h2>
+            <h1 id="final-pct" style="color:var(--accent); font-size:4.5em; margin:15px 0;">0%</h1>
+            
+            <div id="roll-div" class="hidden">
+                <p style="font-weight:bold; color:var(--primary);">ድንቅ ውጤት! ዕጣዎን ይሞክሩ</p>
+                <div id="gift-box" style="font-size:80px; cursor:pointer;" onclick="runRoll()">🎁</div>
+                <p id="roll-text">ሳጥኑን ይጫኑ!</p>
             </div>
+            
             <button class="btn" onclick="location.reload()" style="background:#888;">እንደገና ተጫወት</button>
         </div>
     </div>
@@ -140,153 +128,136 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let questions = [], ads = [], currentIdx = 0, score = 0, timer, timeLeft = 20;
+    let qPool = [], ads = [], idx = 0, score = 0, timer, timeLeft = 20;
 
-    // LocalStorage: Remember user
+    // Load saved user info
     window.onload = () => {
-        if(localStorage.getItem('q_name')) document.getElementById('uName').value = localStorage.getItem('q_name');
-        if(localStorage.getItem('q_phone')) document.getElementById('uPhone').value = localStorage.getItem('q_phone');
+        if(localStorage.getItem('user_name')) document.getElementById('uName').value = localStorage.getItem('user_name');
+        if(localStorage.getItem('user_phone')) document.getElementById('uPhone').value = localStorage.getItem('user_phone');
     };
 
-    async function initApp() {
+    async function startApp() {
         const name = document.getElementById('uName').value;
         const phone = document.getElementById('uPhone').value;
         if(!name || !phone) return alert("እባክዎ ስም እና ስልክ ያስገቡ!");
         
-        localStorage.setItem('q_name', name);
-        localStorage.setItem('q_phone', phone);
+        localStorage.setItem('user_name', name);
+        localStorage.setItem('user_phone', phone);
 
         try {
             const qSnap = await db.collection("questions").get();
-            qSnap.forEach(doc => questions.push(doc.data()));
-            questions = questions.sort(() => 0.5 - Math.random()).slice(0, 25);
+            qSnap.forEach(doc => qPool.push(doc.data()));
+            qPool = qPool.sort(() => 0.5 - Math.random()).slice(0, 25); // Get exactly 25
             
             const adSnap = await db.collection("ads").doc("config").get();
             if(adSnap.exists) ads = adSnap.data().list;
 
-            document.getElementById('reg-screen').classList.add('hidden');
-            renderQuestion();
+            document.getElementById('start-step').classList.add('hidden');
+            renderQ();
         } catch(e) { alert("መረጃ መጫን አልተቻለም!"); }
     }
 
-    function renderQuestion() {
-        // Ads every 3 questions
-        if (currentIdx > 0 && currentIdx % 3 === 0) return showAd();
+    function renderQ() {
+        if (idx > 0 && idx % 3 === 0) return showAd();
 
-        const q = questions[currentIdx];
-        document.getElementById('quiz-screen').classList.remove('hidden');
+        document.getElementById('quiz-step').classList.remove('hidden');
+        const q = qPool[idx];
         document.getElementById('qText').innerText = q.text;
         
-        let btns = '';
-        const lbls = ["ሀ", "ለ", "ሐ", "መ"];
+        let html = '';
+        const labels = ["ሀ", "ለ", "ሐ", "መ"];
         q.options.forEach((opt, i) => {
-            btns += `<button class="btn opt-btn" onclick="checkAnswer('${String.fromCharCode(65+i)}')">
-                        <div class="label-box">${lbls[i]}</div><span>${opt}</span>
+            html += `<button class="btn opt-btn" onclick="submitAns('${String.fromCharCode(65+i)}')">
+                        <div class="label">${labels[i]}</div><span>${opt}</span>
                     </button>`;
         });
-        document.getElementById('options-list').innerHTML = btns;
+        document.getElementById('opt-list').innerHTML = html;
         startTimer();
     }
 
     function startTimer() {
-        timeLeft = 20; // 20 Seconds Updated
+        timeLeft = 20; // 20 Seconds Fixed
         clearInterval(timer);
-        document.getElementById('timer-display').innerText = timeLeft;
+        document.getElementById('timer-circle').innerText = timeLeft;
         timer = setInterval(() => {
             timeLeft--;
-            document.getElementById('timer-display').innerText = timeLeft;
-            if(timeLeft <= 5) document.getElementById('timer-display').style.color = "red";
-            else document.getElementById('timer-display').style.color = "var(--error)";
-            
-            if(timeLeft <= 0) { clearInterval(timer); checkAnswer('TIMEOUT'); }
+            document.getElementById('timer-circle').innerText = timeLeft;
+            if(timeLeft <= 0) { clearInterval(timer); submitAns('TIMEOUT'); }
         }, 1000);
     }
 
-    function checkAnswer(ans) {
+    function submitAns(ans) {
         clearInterval(timer);
-        const correct = questions[currentIdx].correct;
-        const pet = document.getElementById('pet');
-
+        const correct = qPool[idx].correct;
         if(ans === correct) {
             score++;
-            pet.innerText = "🦁"; 
+            document.getElementById('pet-emoji').innerText = "🦁";
             document.getElementById('snd-correct').play().catch(()=>{});
         } else {
-            pet.innerText = "🐑"; 
+            document.getElementById('pet-emoji').innerText = "🐑";
             document.getElementById('snd-wrong').play().catch(()=>{});
         }
 
         setTimeout(() => {
-            currentIdx++;
-            if(currentIdx < questions.length) renderQuestion(); else finishQuiz();
-        }, 700);
+            idx++;
+            if(idx < qPool.length) renderQ(); else showResult();
+        }, 600);
     }
 
     function showAd() {
-        document.getElementById('quiz-screen').classList.add('hidden');
-        const overlay = document.getElementById('ad-overlay');
-        const adBox = document.getElementById('ad-box');
-        const closeBtn = document.getElementById('close-ad-btn');
-        overlay.style.display = 'flex';
+        document.getElementById('quiz-step').classList.add('hidden');
+        const screen = document.getElementById('ad-screen');
+        const closeBtn = document.getElementById('ad-close-btn');
+        screen.style.display = 'flex';
         closeBtn.style.display = 'none';
 
-        const randomAd = ads[Math.floor(Math.random() * ads.length)];
-        adBox.innerHTML = `<img src="${randomAd.img}" style="width:100%; height:100%; object-fit:cover;">`;
+        const randAd = ads[Math.floor(Math.random() * ads.length)];
+        document.getElementById('ad-box').innerHTML = `<img src="${randAd.img}" style="width:100%; height:100%; object-fit:cover;">`;
 
-        let adWait = 5;
-        const adInt = setInterval(() => {
-            adWait--;
-            document.getElementById('ad-timer').innerText = `እባክዎ ለ ${adWait} ሰከንድ ይጠብቁ...`;
-            if(adWait <= 0) {
-                clearInterval(adInt);
-                document.getElementById('ad-timer').innerText = "ማስታወቂያው አልቋል!";
+        let wait = 5;
+        const intv = setInterval(() => {
+            wait--;
+            document.getElementById('ad-msg').innerText = `እባክዎ ለ ${wait} ሰከንድ ይጠብቁ...`;
+            if(wait <= 0) {
+                clearInterval(intv);
+                document.getElementById('ad-msg').innerText = "ቀጥል የሚለውን ይጫኑ!";
                 closeBtn.style.display = 'block';
             }
         }, 1000);
     }
 
-    function hideAd() {
-        document.getElementById('ad-overlay').style.display = 'none';
-        renderQuestion();
+    function closeAd() {
+        document.getElementById('ad-screen').style.display = 'none';
+        renderQ();
     }
 
-    function finishQuiz() {
-        document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        const finalPct = Math.round((score/questions.length)*100);
-        document.getElementById('score-val').innerText = finalPct + "%";
+    function showResult() {
+        document.getElementById('quiz-step').classList.add('hidden');
+        document.getElementById('result-step').classList.remove('hidden');
+        const pct = Math.round((score/qPool.length)*100);
+        document.getElementById('final-pct').innerText = pct + "%";
         
-        if(finalPct >= 90) document.getElementById('roll-zone').style.display = 'block';
+        if(pct >= 90) document.getElementById('roll-div').classList.remove('hidden');
     }
 
-    function startRoll() {
-        const gift = document.querySelector('.gift-box');
-        const status = document.getElementById('roll-status');
-        gift.style.animation = "spin 0.4s infinite linear";
-        status.innerText = "እጣ እየወጣ ነው...";
-
+    function runRoll() {
+        const gift = document.getElementById('gift-box');
+        const txt = document.getElementById('roll-text');
+        gift.innerText = "🌀";
+        txt.innerText = "እየተሽከረከረ ነው...";
+        
         setTimeout(() => {
-            gift.style.animation = "none";
-            const win = Math.random() < 0.15; // 15% Win chance
+            const win = Math.random() < 0.15;
             if(win) {
                 gift.innerText = "💰";
-                status.innerText = "እንኳን ደስ አለዎት! አሸንፈዋል!";
-                alert("የሞባይል ካርድ እጣ ደርሶዎታል። ስልክዎን እናረጋግጣለን!");
+                txt.innerText = "እንኳን ደስ አለዎት! አሸንፈዋል!";
+                alert("የሞባይል ካርድ አሸንፈዋል! በቅርቡ በስልክዎ ይላክለታል።");
             } else {
                 gift.innerText = "📦";
-                status.innerText = "ለዛሬ ዕድል የለም!";
+                txt.innerText = "ዕድል አልቀናዎትም!";
             }
-        }, 2500);
+        }, 2000);
     }
 </script>
-
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error', err));
-        });
-    }
-</script>
-
 </body>
 </html>
