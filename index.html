@@ -14,6 +14,7 @@
             --accent: #f39c12; 
             --sky-blue: #87CEEB; 
             --light-sky: #e1f5fe;
+            --danger: #e74c3c;
         }
 
         body { 
@@ -22,67 +23,46 @@
             display: flex; justify-content: center; align-items: center; 
             min-height: 100vh;
             background: linear-gradient(180deg, var(--sky-blue) 0%, var(--light-sky) 100%); 
-            color: #333; overflow-x: hidden;
+            overflow: hidden;
         }
 
-        /* --- ማስታወቂያዎች (Ad Slots) --- */
+        /* Top & Bottom Ad Slots Only (Sides Removed) */
         .ad-box { 
             position: fixed; 
-            background: #ffffff; 
-            overflow: hidden; 
-            z-index: 9999; /* ሁልጊዜ ከላይ እንዲሆን */
-            border: 1px solid rgba(0,0,0,0.1); 
-            border-radius: 8px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 5; /* Lower than container to prevent covering logo */
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
         }
+        .ad-top { top: 0; width: 100%; height: 60px; background: rgba(255,255,255,0.1); }
+        .ad-bottom { bottom: 0; width: 100%; height: 60px; background: rgba(255,255,255,0.1); }
+        .ad-media { height: 100%; max-width: 100%; object-fit: contain; }
 
-        /* የላይኛውና የታችኛው ማስታወቂያ */
-        .ad-top { top: 10px; width: 90%; height: 65px; left: 5%; }
-        .ad-bottom { bottom: 10px; width: 90%; height: 65px; left: 5%; }
-
-        /* የጎን ማስታወቂያዎች (Sidebar) - ስፋቱ ተስተካክሏል */
-        .ad-side { 
-            width: 140px; /* በጣም እንዳይሰፋ ተቀንሷል */
-            height: 500px; 
-            top: 50%; 
-            transform: translateY(-50%); 
-        }
-        .ad-left { left: 15px; }
-        .ad-right { right: 15px; }
-
-        /* ምስሉ ሳጥኑን እንዲሞላ */
-        .ad-media { width: 100%; height: 100%; object-fit: cover; }
-
-        /* በስልክ ላይ የጎን ማስታወቂያዎች እንዳይታዩ */
-        @media (max-width: 1100px) { .ad-side { display: none; } }
-
-        /* --- ዋናው የጥያቄ ሳጥን --- */
         .container { 
-            background: white; 
-            width: 90%; 
-            max-width: 480px; 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1); 
-            text-align: center; 
-            position: relative; 
-            z-index: 10;
+            background: white; width: 90%; max-width: 450px; 
+            padding: 30px; border-radius: 25px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
+            text-align: center; position: relative; z-index: 100;
+        }
+
+        /* Timer Style */
+        #timer-container {
+            width: 80px; height: 80px; border-radius: 50%;
+            border: 5px solid var(--light-sky);
+            display: flex; align-items: center; justify-content: center;
+            margin: 10px auto 20px; font-weight: bold; font-size: 1.5em;
+            color: var(--primary); transition: 0.3s;
         }
 
         #qText {
-            font-weight: bold; font-size: 1.25em; background: var(--light-sky);
-            padding: 20px; border-radius: 12px; color: var(--primary);
-            margin-bottom: 20px; line-height: 1.5;
+            font-weight: bold; font-size: 1.2em; background: var(--light-sky);
+            padding: 20px; border-radius: 15px; color: var(--primary);
+            margin-bottom: 20px; min-height: 60px;
         }
 
         .btn { 
             width: 100%; padding: 15px; background: var(--primary); 
-            color: white; border: none; border-radius: 10px; 
-            cursor: pointer; font-weight: bold; margin-top: 10px; 
-            font-size: 1.1em; transition: 0.2s;
+            color: white; border: none; border-radius: 12px; 
+            cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 1.1em;
         }
 
         .opt-btn {
@@ -91,20 +71,19 @@
         }
 
         .label-box {
-            background: var(--primary); color: white; min-width: 30px;
-            height: 30px; display: flex; align-items: center; justify-content: center;
-            border-radius: 5px; margin-right: 12px;
-        }
-
-        /* ውጤት ሲዘጋጅ የሚታይ ማስታወቂያ */
-        #interstitial-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 10000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
+            background: var(--primary); color: white; min-width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 6px; margin-right: 15px;
         }
 
         .hidden { display: none; }
-        input { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none; }
+        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; }
+
+        #interstitial-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 2000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -114,31 +93,31 @@
 
     <div class="ad-box ad-top" id="slot-top"></div>
     <div class="ad-box ad-bottom" id="slot-bottom"></div>
-    <div class="ad-box ad-side ad-left" id="slot-left"></div>
-    <div class="ad-box ad-side ad-right" id="slot-right"></div>
 
     <div id="interstitial-overlay">
-        <p id="timer-text" style="color:white; font-size:1.1em;">ውጤትዎ እየተዘጋጀ ነው...</p>
-        <div id="interstitial-content" style="width:300px; height:400px; margin-top:15px; border-radius:10px; overflow:hidden; background:white;"></div>
+        <p id="wait-text" style="color:white; font-size:1.2em;">ውጤትዎ እየተዘጋጀ ነው...</p>
+        <div id="interstitial-content" style="width:300px; height:400px; margin-top:15px; border-radius:15px; overflow:hidden; background:white;"></div>
     </div>
 
     <div class="container">
-        <h1 style="color:var(--primary); margin:0; font-size: 2.2em;">ቃሉ!</h1>
+        <h1 style="color:var(--primary); margin:0; font-size: 2.5em; position: relative; z-index: 110;">ቃሉ!</h1>
+        
         <div id="step-reg">
-            <p style="color:#777; margin-bottom:20px;">የመጽሐፍ ቅዱስ እውቀት መፈተኛ</p>
+            <p style="color: #666; margin-bottom: 20px;">የመጽሐፍ ቅዱስ ጥያቄዎች</p>
             <input type="text" id="uName" placeholder="ሙሉ ስም">
             <input type="tel" id="uPhone" placeholder="ስልክ ቁጥር">
             <button class="btn" onclick="startApp()">መፈተን ጀምር ➔</button>
         </div>
 
         <div id="step-quiz" class="hidden">
+            <div id="timer-container">60</div>
             <p id="qText"></p>
             <div id="options-container"></div>
         </div>
 
         <div id="step-res" class="hidden">
             <h2 style="color:var(--primary);">እንኳን ደስ አለዎት!</h2>
-            <div style="font-size: 4em; font-weight:900; color: var(--accent); margin: 15px 0;"><span id="finalScore">0</span>%</div>
+            <div style="font-size: 4em; font-weight:900; color: var(--accent);"><span id="finalScore">0</span>%</div>
             <button class="btn" onclick="location.reload()">እንደገና ተጫወት</button>
         </div>
     </div>
@@ -156,7 +135,7 @@
     const db = firebase.firestore();
 
     let qPool = [], adsList = [], interstitialData = null;
-    let idx = 0, score = 0;
+    let idx = 0, score = 0, timeLeft = 60, timerInterval;
 
     async function startApp() {
         const name = document.getElementById('uName').value;
@@ -174,24 +153,36 @@
         } catch(e) { alert("መረጃ መጫን አልተቻለም!"); }
     }
 
-    function renderImg(adData) {
-        const imgHtml = `<img src="${adData.img}" class="ad-media">`;
-        return (adData.link && adData.link !== "#") 
-            ? `<a href="${adData.link}" target="_blank" style="width:100%; height:100%; display:block;">${imgHtml}</a>` 
-            : imgHtml;
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 60;
+        const display = document.getElementById('timer-container');
+        display.style.color = 'var(--primary)';
+        display.innerText = timeLeft;
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            display.innerText = timeLeft;
+            if(timeLeft <= 10) display.style.color = 'var(--danger)';
+            if(timeLeft <= 0) {
+                clearInterval(timerInterval);
+                submitAns('TIMEOUT');
+            }
+        }, 1000);
     }
 
     function updateAds() {
         if(!adsList || adsList.length === 0) return;
-        ['slot-top', 'slot-bottom', 'slot-left', 'slot-right'].forEach(slotId => {
+        ['slot-top', 'slot-bottom'].forEach(slotId => {
             const randomAd = adsList[Math.floor(Math.random() * adsList.length)];
             const slot = document.getElementById(slotId);
-            if(slot) slot.innerHTML = renderImg(randomAd);
+            if(slot) slot.innerHTML = `<img src="${randomAd.img}" class="ad-media">`;
         });
     }
 
     function showQ() {
         updateAds();
+        startTimer();
         document.getElementById('step-quiz').classList.remove('hidden');
         const q = qPool[idx];
         document.getElementById('qText').innerText = q.text;
@@ -206,7 +197,9 @@
     }
 
     function submitAns(ans) {
-        if(ans === qPool[idx].correct) {
+        clearInterval(timerInterval);
+        const correct = qPool[idx].correct;
+        if(ans === correct) {
             score++;
             document.getElementById('snd-correct').play().catch(()=>{});
         } else {
@@ -223,7 +216,7 @@
         if(!interstitialData) return finish();
         const overlay = document.getElementById('interstitial-overlay');
         overlay.style.display = 'flex';
-        document.getElementById('interstitial-content').innerHTML = renderImg(interstitialData);
+        document.getElementById('interstitial-content').innerHTML = `<img src="${interstitialData.img}" style="width:100%; height:100%; object-fit:cover;">`;
         setTimeout(() => { overlay.style.display = 'none'; finish(); }, 3000);
     }
 
