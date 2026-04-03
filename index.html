@@ -27,6 +27,21 @@
         .label { background: var(--primary); color: white; min-width: 32px; height: 32px; border-radius: 7px; margin-right: 15px; display: flex; align-items: center; justify-content: center; }
         .hidden { display: none; }
         input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 1.1em; }
+
+        /* Rolling Animation */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
     </style>
 </head>
 <body>
@@ -57,7 +72,7 @@
                 <h1 id="res-pct" style="color:var(--accent); font-size:4.5em; margin:15px 0;">0%</h1>
                 <div id="roll-section" class="hidden">
                     <p style="font-weight:bold;">ዕጣዎን ይሞክሩ!</p>
-                    <div style="font-size:70px; cursor:pointer;" onclick="startRoll()">🎁</div>
+                    <div id="gift-box" style="font-size:70px; cursor:pointer;" onclick="startRoll()">🎁</div>
                 </div>
                 <button class="btn" onclick="location.reload()" style="background:#888;">እንደገና</button>
             </div>
@@ -76,7 +91,7 @@
     const db = firebase.firestore();
 
     let qPool = [], ads = [], qIdx = 0, score = 0, timer, tLeft = 20;
-    let winChance = 15, minToRoll = 90; // Default values
+    let winChance = 15, minToRoll = 90;
 
     async function startApp() {
         const n = document.getElementById('uName').value, p = document.getElementById('uPhone').value;
@@ -84,13 +99,11 @@
         localStorage.setItem('un', n); localStorage.setItem('up', p);
 
         try {
-            // 1. Load Settings from Dashboard
             const rewSnap = await db.collection("config").doc("rewards").get();
             if(rewSnap.exists) {
                 winChance = rewSnap.data().winRate || 15;
                 minToRoll = rewSnap.data().minScore || 90;
             }
-            // 2. Load Ads & Questions
             const qSnap = await db.collection("questions").get();
             qSnap.forEach(d => qPool.push(d.data()));
             qPool = qPool.sort(() => 0.5 - Math.random()).slice(0, 25);
@@ -140,18 +153,36 @@
         document.getElementById('scr-res').classList.remove('hidden');
         const p = Math.round((score/qPool.length)*100);
         document.getElementById('res-pct').innerText = p + "%";
-        
-        // Save result to Firebase
         await db.collection("results").add({ name: localStorage.getItem('un'), phone: localStorage.getItem('up'), score: p, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        
-        // Use Dashboard Settings for Reward Logic
         if(p >= minToRoll) document.getElementById('roll-section').classList.remove('hidden');
     }
 
     function startRoll() {
-        // Use Win Rate from Dashboard
-        const win = (Math.random() * 100) < winChance;
-        alert(win ? "እንኳን ደስ አለዎት! አሸንፈዋል!" : "ለዛሬ ዕድል የለም!");
+        const gift = document.getElementById('gift-box');
+        const rollSection = document.getElementById('roll-section');
+        
+        // Rolling animation start
+        gift.style.animation = "shake 0.8s infinite";
+        rollSection.querySelector('p').innerText = "በመፈለግ ላይ...";
+
+        setTimeout(() => {
+            gift.style.animation = "none";
+            const win = (Math.random() * 100) < winChance;
+
+            if (win) {
+                rollSection.innerHTML = `
+                    <div style="font-size:80px; margin-bottom:10px;">🎁</div>
+                    <h2 style="color:#27ae60; margin:5px 0;">አሸንፈዋል!</h2>
+                    <p style="font-weight:bold; font-size:1.2em; color:#1a2a6c;">እንኳን ደስ አሎት! የ 5 ብር ካርድ አግኝተዋል!</p>
+                `;
+            } else {
+                rollSection.innerHTML = `
+                    <div style="font-size:80px; margin-bottom:10px;">😔</div>
+                    <h2 style="color:#e74c3c; margin:5px 0;">አልደረሰዎትም!</h2>
+                    <p>ስለተሳተፉ እናመሰግናለን፤ በሚቀጥለው ይሞክሩ።</p>
+                `;
+            }
+        }, 2500);
     }
 </script>
 </body>
