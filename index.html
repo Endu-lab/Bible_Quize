@@ -13,7 +13,6 @@
             --primary: #1a2a6c; 
             --accent: #f39c12; 
             --sky-blue: #87CEEB; 
-            --error: #e74c3c;
             --white: #ffffff;
         }
 
@@ -21,56 +20,61 @@
             font-family: 'Segoe UI', 'Nyala', sans-serif; 
             margin: 0; padding: 0;
             background: linear-gradient(180deg, var(--sky-blue) 0%, #f0f8ff 100%); 
-            height: 100vh; overflow: hidden; display: flex; flex-direction: column; align-items: center;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* 1. Centered Bold Logo */
-        .header-nav {
-            width: 100%; height: 80px; background: var(--white);
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000;
+        /* 1. Header Area (Fixed Top) */
+        header { width: 100%; z-index: 2000; position: relative; background: var(--white); }
+        .logo-area {
+            height: 70px; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .header-nav h1 { color: var(--primary); font-size: 3.5em; font-weight: 900; margin: 0; }
+        .logo-area h1 { color: var(--primary); font-size: 3em; font-weight: 900; margin: 0; }
 
-        /* 2. Moving News Ticker */
         .ticker-wrap {
-            width: 100%; background: var(--primary); color: white;
-            padding: 6px 0; overflow: hidden; white-space: nowrap;
+            background: var(--primary); color: white; padding: 4px 0;
+            overflow: hidden; white-space: nowrap; font-size: 0.85em;
         }
-        .ticker-wrap p { display: inline-block; animation: ticker 20s linear infinite; margin: 0; font-weight: bold; }
+        .ticker-wrap p { display: inline-block; animation: ticker 20s linear infinite; margin: 0; }
         @keyframes ticker { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
-        /* 3. Main Quiz Card */
-        .app-container { 
-            background: var(--white); width: 90%; max-width: 420px; 
-            padding: 25px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            text-align: center; margin-top: 20px; position: relative; z-index: 100;
+        /* 2. Main Scrollable/Centered Area */
+        main {
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            padding: 10px; position: relative; overflow-y: auto;
         }
 
-        #timer-circle { 
-            width: 60px; height: 60px; border: 4px solid #eee; border-radius: 50%;
+        .app-card { 
+            background: var(--white); width: 100%; max-width: 380px; 
+            padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center; margin-bottom: 70px; /* Space for bottom ad */
+        }
+
+        #timer-box { 
+            width: 50px; height: 50px; border: 3px solid #e74c3c; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 10px; font-size: 1.5em; font-weight: 900; color: var(--error);
+            margin: 0 auto 10px; font-size: 1.3em; font-weight: 900; color: #e74c3c;
         }
 
-        /* 4. Bottom Sticky Ad (Banner) */
-        .bottom-ad-banner {
-            position: fixed; bottom: 0; width: 100%; height: 90px;
-            background: #fff; border-top: 2px solid #ddd;
+        /* 3. Small Bottom Ad Banner */
+        .bottom-ad {
+            position: fixed; bottom: 0; width: 100%; height: 65px;
+            background: #fff; border-top: 1px solid #ddd;
             display: flex; align-items: center; justify-content: center;
-            z-index: 1000; overflow: hidden;
+            z-index: 1500; overflow: hidden;
         }
-        .ad-img { height: 100%; width: auto; max-width: 100%; object-fit: contain; }
+        .ad-img { height: 100%; width: auto; object-fit: contain; }
 
-        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.1em; margin-top: 10px; }
-        .opt-btn { background: #fdfdfd; color: #333; text-align: left; border: 2px solid #eee; display: flex; align-items: center; }
-        .label { background: var(--primary); color: white; min-width: 32px; height: 32px; border-radius: 6px; margin-right: 15px; display: flex; align-items: center; justify-content: center; }
+        /* Buttons & Inputs */
+        .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 8px; font-size: 1em; }
+        .opt-btn { background: #fdfdfd; color: #333; text-align: left; border: 1px solid #eee; display: flex; align-items: center; }
+        .label { background: var(--primary); color: white; min-width: 28px; height: 28px; border-radius: 5px; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 0.9em; }
 
-        /* Full Screen Ads Overlay */
+        /* Full Overlay Ads */
         #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; }
 
         .hidden { display: none; }
-        input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 2px solid #ddd; outline: none; font-size: 1em; box-sizing: border-box; }
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; outline: none; }
     </style>
 </head>
 <body>
@@ -79,50 +83,47 @@
     <audio id="snd-wrong" src="https://raw.githubusercontent.com/Endu-lab/Bible_Quize/main/assets/sounds/wrong.mp3"></audio>
     <audio id="ad-audio" loop></audio>
 
-    <div class="header-nav">
-        <h1>ቃል</h1>
-    </div>
-
-    <div class="ticker-wrap">
-        <p>🌟 እንኳን ደስ አለዎት! አዳዲስ አሸናፊዎች በዕጣ እየተመረጡ ነው። • ጓደኞችዎን ይጋብዙ እና ተጨማሪ ዕድል ያግኙ! • ቃሉን ይፈትኑ ይሸለሙ! 🌟</p>
-    </div>
+    <header>
+        <div class="logo-area"><h1>ቃል</h1></div>
+        <div class="ticker-wrap"><p>🌟 እንኳን ደስ አለዎት! አሸናፊዎች እየተመዘገቡ ነው። • ጓደኞችዎን ይጋብዙ! • ቃሉን ይፈትኑ ይሸለሙ! 🌟</p></div>
+    </header>
 
     <div id="ad-overlay">
-        <h2 style="color:var(--primary);">ማስታወቂያ</h2>
-        <div id="full-ad-box" style="width:300px; height:300px; background:#f0f0f0; margin:20px 0; border-radius:20px; overflow:hidden;"></div>
-        <p id="ad-timer-msg">እባክዎ ለ 5 ሰከንድ ይጠብቁ...</p>
-        <button id="ad-close-btn" class="btn" style="width:200px; display:none;" onclick="closeForcedAd()">ቀጥል ➔</button>
+        <h3>ማስታወቂያ</h3>
+        <div id="full-ad-box" style="width:280px; height:280px; background:#f0f0f0; margin:15px 0; border-radius:15px; overflow:hidden;"></div>
+        <p id="ad-wait-msg">ለ 5 ሰከንድ ይጠብቁ...</p>
+        <button id="ad-close-btn" class="btn" style="width:180px; display:none;" onclick="closeForcedAd()">ቀጥል ➔</button>
     </div>
 
-    <div class="app-container" id="main-content">
-        <div style="font-size: 50px; margin-bottom: 10px;" id="pet">🐑</div>
+    <main>
+        <div class="app-card" id="main-card">
+            <div style="font-size: 40px; margin-bottom: 5px;" id="pet">🐑</div>
 
-        <div id="start-step">
-            <h3 style="color:var(--primary);">የመግቢያ መረጃ</h3>
-            <input type="text" id="uName" placeholder="ሙሉ ስም">
-            <input type="tel" id="uPhone" placeholder="ስልክ ቁጥር">
-            <button class="btn" onclick="startApp()">መፈተን ጀምር ➔</button>
-        </div>
-
-        <div id="quiz-step" class="hidden">
-            <div id="timer-circle">20</div>
-            <p id="qText" style="font-weight:bold; font-size:1.1em; min-height:60px;"></p>
-            <div id="opt-list"></div>
-        </div>
-
-        <div id="result-step" class="hidden">
-            <h2 style="color:var(--primary);">የፈተና ውጤትዎ</h2>
-            <h1 id="final-pct" style="color:var(--accent); font-size:4em; margin:10px 0;">0%</h1>
-            <div id="roll-div" class="hidden">
-                <p style="font-weight:bold;">ዕጣዎን ይሞክሩ!</p>
-                <div style="font-size:70px; cursor:pointer;" onclick="runRoll()">🎁</div>
+            <div id="start-step">
+                <input type="text" id="uName" placeholder="ሙሉ ስም">
+                <input type="tel" id="uPhone" placeholder="ስልክ ቁጥር">
+                <button class="btn" onclick="startApp()">መፈተን ጀምር ➔</button>
             </div>
-            <button class="btn" onclick="location.reload()" style="background:#888;">እንደገና ተጫወት</button>
-        </div>
-    </div>
 
-    <div class="bottom-ad-banner" id="bottom-banner">
-        <p style="color:#999; font-size:0.8em;">ማስታወቂያ እዚህ ይጫናል...</p>
+            <div id="quiz-step" class="hidden">
+                <div id="timer-box">20</div>
+                <p id="qText" style="font-weight:bold; font-size:1.1em; margin:10px 0; min-height:50px;"></p>
+                <div id="opt-list"></div>
+            </div>
+
+            <div id="result-step" class="hidden">
+                <h1 id="final-pct" style="color:var(--accent); font-size:3.5em; margin:5px 0;">0%</h1>
+                <div id="roll-div" class="hidden">
+                    <p>ዕጣዎን ይሞክሩ!</p>
+                    <div style="font-size:60px; cursor:pointer;" onclick="runRoll()">🎁</div>
+                </div>
+                <button class="btn" onclick="location.reload()" style="background:#888;">እንደገና</button>
+            </div>
+        </div>
+    </main>
+
+    <div class="bottom-ad" id="bottom-banner">
+        <p style="color:#ccc; font-size:0.7em;">Advertisement</p>
     </div>
 
 <script>
@@ -141,9 +142,7 @@
         const name = document.getElementById('uName').value;
         const phone = document.getElementById('uPhone').value;
         if(!name || !phone) return alert("ስም እና ስልክ ያስገቡ!");
-        
-        localStorage.setItem('un', name);
-        localStorage.setItem('up', phone);
+        localStorage.setItem('un', name); localStorage.setItem('up', phone);
 
         try {
             const qSnap = await db.collection("questions").get();
@@ -155,11 +154,11 @@
 
             document.getElementById('start-step').classList.add('hidden');
             renderQ();
-        } catch(e) { alert("መረጃ መጫን አልተቻለም!"); }
+        } catch(e) { alert("Error loading data!"); }
     }
 
     function renderQ() {
-        updateBottomAd(); // Update banner every question
+        updateBottomAd();
         if (idx > 0 && idx % 3 === 0) return showForcedAd();
 
         document.getElementById('quiz-step').classList.remove('hidden');
@@ -167,78 +166,62 @@
         document.getElementById('qText').innerText = q.text;
         
         let html = '';
-        const labels = ["ሀ", "ለ", "ሐ", "መ"];
+        const lbls = ["ሀ", "ለ", "ሐ", "መ"];
         q.options.forEach((opt, i) => {
             html += `<button class="btn opt-btn" onclick="submitAns('${String.fromCharCode(65+i)}')">
-                        <div class="label">${labels[i]}</div><span>${opt}</span>
+                        <div class="label">${lbls[i]}</div><span>${opt}</span>
                     </button>`;
         });
         document.getElementById('opt-list').innerHTML = html;
         startTimer();
     }
 
-    // UPDATE BOTTOM BANNER & AUDIO
     function updateBottomAd() {
-        if(!ads || ads.length === 0) return;
+        if(!ads.length) return;
         const randAd = ads[Math.floor(Math.random() * ads.length)];
-        const banner = document.getElementById('bottom-banner');
-        banner.innerHTML = `<img src="${randAd.img}" class="ad-img">`;
-        
-        // Play ad audio if available in data
+        document.getElementById('bottom-banner').innerHTML = `<img src="${randAd.img}" class="ad-img">`;
         if(randAd.audio) {
             const audio = document.getElementById('ad-audio');
-            audio.src = randAd.audio;
-            audio.play().catch(()=>{});
+            audio.src = randAd.audio; audio.play().catch(()=>{});
         }
     }
 
     function startTimer() {
-        timeLeft = 20;
-        clearInterval(timer);
-        document.getElementById('timer-circle').innerText = timeLeft;
+        timeLeft = 20; clearInterval(timer);
+        document.getElementById('timer-box').innerText = timeLeft;
         timer = setInterval(() => {
-            timeLeft--;
-            document.getElementById('timer-circle').innerText = timeLeft;
+            timeLeft--; document.getElementById('timer-box').innerText = timeLeft;
             if(timeLeft <= 0) { clearInterval(timer); submitAns('TIMEOUT'); }
         }, 1000);
     }
 
     function submitAns(ans) {
         clearInterval(timer);
-        const correct = qPool[idx].correct;
-        if(ans === correct) {
-            score++;
-            document.getElementById('pet').innerText = "🦁";
+        if(ans === qPool[idx].correct) {
+            score++; document.getElementById('pet').innerText = "🦁";
             document.getElementById('snd-correct').play().catch(()=>{});
         } else {
             document.getElementById('pet').innerText = "🐑";
             document.getElementById('snd-wrong').play().catch(()=>{});
         }
         setTimeout(() => {
-            idx++;
-            if(idx < qPool.length) renderQ(); else showResult();
+            idx++; if(idx < qPool.length) renderQ(); else showResult();
         }, 600);
     }
 
     function showForcedAd() {
         document.getElementById('quiz-step').classList.add('hidden');
-        const screen = document.getElementById('ad-overlay');
-        const closeBtn = document.getElementById('ad-close-btn');
-        screen.style.display = 'flex';
-        closeBtn.style.display = 'none';
+        const overlay = document.getElementById('ad-overlay');
+        overlay.style.display = 'flex';
+        document.getElementById('ad-close-btn').style.display = 'none';
 
-        const randAd = ads[Math.floor(Math.random() * ads.length)];
-        document.getElementById('full-ad-box').innerHTML = `<img src="${randAd.img}" style="width:100%; height:100%; object-fit:cover;">`;
+        const rAd = ads[Math.floor(Math.random() * ads.length)];
+        document.getElementById('full-ad-box').innerHTML = `<img src="${rAd.img}" style="width:100%; height:100%; object-fit:cover;">`;
 
         let wait = 5;
         const intv = setInterval(() => {
-            wait--;
-            document.getElementById('ad-timer-msg').innerText = `እባክዎ ለ ${wait} ሰከንድ ይጠብቁ...`;
-            if(wait <= 0) {
-                clearInterval(intv);
-                document.getElementById('ad-timer-msg').innerText = "ቀጥል የሚለውን ይጫኑ!";
-                closeBtn.style.display = 'block';
-            }
+            wait--; document.getElementById('ad-wait-msg').innerText = `ለ ${wait} ሰከንድ ይጠብቁ...`;
+            if(wait <= 0) { clearInterval(intv); document.getElementById('ad-wait-msg').innerText = "አልቋል!"; document.getElementById('ad-close-btn').style.display = 'block'; }
         }, 1000);
     }
 
@@ -249,7 +232,7 @@
 
     function showResult() {
         document.getElementById('quiz-step').classList.add('hidden');
-        document.getElementById('bottom-banner').classList.add('hidden'); // Hide banner on result
+        document.getElementById('bottom-banner').style.display = 'none';
         document.getElementById('result-step').classList.remove('hidden');
         const pct = Math.round((score/qPool.length)*100);
         document.getElementById('final-pct').innerText = pct + "%";
@@ -258,7 +241,7 @@
 
     function runRoll() {
         const win = Math.random() < 0.15;
-        alert(win ? "እንኳን ደስ አለዎት! አሸንፈዋል!" : "ዕድል አልቀናዎትም!");
+        alert(win ? "እንኳን ደስ አለዎት! አሸንፈዋል!" : "ዕድል የለም!");
     }
 </script>
 </body>
