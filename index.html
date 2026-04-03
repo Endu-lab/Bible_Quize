@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ቃል (Qal) - Bible Quiz</title>
+    <title>ቃል (Qal) - Bible Quiz PWA</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -14,7 +14,8 @@
             --accent: #f39c12; 
             --sky-blue: #87CEEB; 
             --light-sky: #e1f5fe;
-            --danger: #e74c3c;
+            --success: #27ae60;
+            --error: #e74c3c;
         }
 
         body { 
@@ -23,67 +24,47 @@
             display: flex; justify-content: center; align-items: center; 
             min-height: 100vh;
             background: linear-gradient(180deg, var(--sky-blue) 0%, var(--light-sky) 100%); 
-            overflow: hidden;
+            overflow: hidden; touch-action: manipulation;
         }
 
-        /* Top & Bottom Ad Slots Only (Sides Removed) */
-        .ad-box { 
-            position: fixed; 
-            z-index: 5; /* Lower than container to prevent covering logo */
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-        }
-        .ad-top { top: 0; width: 100%; height: 60px; background: rgba(255,255,255,0.1); }
-        .ad-bottom { bottom: 0; width: 100%; height: 60px; background: rgba(255,255,255,0.1); }
-        .ad-media { height: 100%; max-width: 100%; object-fit: contain; }
-
+        /* Container & Card Swipe Animation */
         .container { 
-            background: white; width: 90%; max-width: 450px; 
-            padding: 30px; border-radius: 25px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
+            background: white; width: 92%; max-width: 420px; 
+            padding: 25px; border-radius: 30px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2); 
             text-align: center; position: relative; z-index: 100;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Timer Style */
-        #timer-container {
-            width: 80px; height: 80px; border-radius: 50%;
-            border: 5px solid var(--light-sky);
-            display: flex; align-items: center; justify-content: center;
-            margin: 10px auto 20px; font-weight: bold; font-size: 1.5em;
-            color: var(--primary); transition: 0.3s;
-        }
+        /* Animated Animal UI */
+        #animal-status { font-size: 50px; margin-bottom: 10px; display: block; height: 60px; }
+
+        /* Timer & Header */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        #timer-box { font-weight: bold; color: var(--primary); font-size: 1.2em; border: 3px solid var(--light-sky); padding: 8px 15px; border-radius: 20px; }
 
         #qText {
-            font-weight: bold; font-size: 1.2em; background: var(--light-sky);
-            padding: 20px; border-radius: 15px; color: var(--primary);
-            margin-bottom: 20px; min-height: 60px;
+            font-weight: 700; font-size: 1.25em; color: var(--primary);
+            margin: 20px 0; min-height: 80px; line-height: 1.4;
         }
 
-        .btn { 
-            width: 100%; padding: 15px; background: var(--primary); 
-            color: white; border: none; border-radius: 12px; 
-            cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 1.1em;
-        }
+        /* Buttons & Options */
+        .btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 1.1em; transition: 0.3s; }
+        .opt-btn { background: #f8f9fa; color: #333; text-align: left; border: 2px solid #eee; display: flex; align-items: center; }
+        .opt-btn:active { transform: scale(0.98); background: var(--light-sky); }
+        .label-box { background: var(--primary); color: white; min-width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-right: 15px; }
 
-        .opt-btn {
-            background: #ffffff; color: #333; text-align: left;
-            border: 2px solid #eee; display: flex; align-items: center;
-        }
-
-        .label-box {
-            background: var(--primary); color: white; min-width: 30px; height: 30px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 6px; margin-right: 15px;
-        }
+        /* Lottery Screen */
+        #roll-wheel { font-size: 80px; margin: 30px 0; animation: spin 1s infinite linear; display: none; }
+        @keyframes spin { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }
 
         .hidden { display: none; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; }
+        .slide-out { transform: translateX(-120%) rotate(-10deg); opacity: 0; }
+        .slide-in { animation: slideIn 0.4s forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        #interstitial-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 2000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-        }
+        /* Ads Overlay */
+        #ad-break { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -91,101 +72,93 @@
     <audio id="snd-correct" src="https://raw.githubusercontent.com/Endu-lab/Bible_Quize/main/assets/sounds/correct.mp3"></audio>
     <audio id="snd-wrong" src="https://raw.githubusercontent.com/Endu-lab/Bible_Quize/main/assets/sounds/wrong.mp3"></audio>
 
-    <div class="ad-box ad-top" id="slot-top"></div>
-    <div class="ad-box ad-bottom" id="slot-bottom"></div>
-
-    <div id="interstitial-overlay">
-        <p id="wait-text" style="color:white; font-size:1.2em;">ውጤትዎ እየተዘጋጀ ነው...</p>
-        <div id="interstitial-content" style="width:300px; height:400px; margin-top:15px; border-radius:15px; overflow:hidden; background:white;"></div>
+    <div id="ad-break">
+        <p>የማስታወቂያ እረፍት...</p>
+        <div id="ad-content" style="width:300px; height:250px; background:#eee; border-radius:15px; overflow:hidden;"></div>
+        <button class="btn" style="width:200px;" onclick="closeAd()">ቀጥል ➔</button>
     </div>
 
-    <div class="container">
-        <h1 style="color:var(--primary); margin:0; font-size: 2.5em; position: relative; z-index: 110;">ቃሉ!</h1>
-        
+    <div class="container" id="main-card">
+        <header>
+            <h1 style="color:var(--primary); margin:0; font-size: 1.8em;">ቃሉ!</h1>
+            <div id="timer-box">60</div>
+        </header>
+
+        <span id="animal-status">🐑</span>
+
         <div id="step-reg">
-            <p style="color: #666; margin-bottom: 20px;">የመጽሐፍ ቅዱስ ጥያቄዎች</p>
-            <input type="text" id="uName" placeholder="ሙሉ ስም">
-            <input type="tel" id="uPhone" placeholder="ስልክ ቁጥር">
+            <input type="text" id="uName" placeholder="ሙሉ ስም" class="btn" style="background:white; color:black; border:2px solid #eee; text-align:left;">
+            <input type="tel" id="uPhone" placeholder="ስልክ ቁጥር" class="btn" style="background:white; color:black; border:2px solid #eee; text-align:left;">
             <button class="btn" onclick="startApp()">መፈተን ጀምር ➔</button>
         </div>
 
         <div id="step-quiz" class="hidden">
-            <div id="timer-container">60</div>
             <p id="qText"></p>
             <div id="options-container"></div>
         </div>
 
         <div id="step-res" class="hidden">
-            <h2 style="color:var(--primary);">እንኳን ደስ አለዎት!</h2>
-            <div style="font-size: 4em; font-weight:900; color: var(--accent);"><span id="finalScore">0</span>%</div>
-            <button class="btn" onclick="location.reload()">እንደገና ተጫወት</button>
+            <h2 id="res-msg">ጥሩ ሙከራ!</h2>
+            <div style="font-size: 4em; font-weight:900; color: var(--accent);" id="finalScore">0%</div>
+            <div id="roll-section" class="hidden">
+                <p>እንኳን ደስ አለዎት! ለሽልማት እጣ ማውጣት ይችላሉ።</p>
+                <div id="roll-wheel">🎁</div>
+                <button class="btn" id="roll-btn" onclick="runLottery()" style="background:var(--success);">እጣ አውጣ (Roll) 🎲</button>
+            </div>
+            <button class="btn" onclick="location.reload()" style="margin-top:20px; background:#777;">እንደገና ተጫወት</button>
         </div>
     </div>
 
 <script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyCLiqB5FqygKqPwLlctFsvQBP58fHontnc",
-        authDomain: "biblicallanguagequizbot.firebaseapp.com",
-        projectId: "biblicallanguagequizbot",
-        storageBucket: "biblicallanguagequizbot.firebasestorage.app",
-        messagingSenderId: "1040255793336",
-        appId: "1:1040255793336:web:83444c54330769d257dc4d"
-    };
+    // Firebase Config remains same
+    const firebaseConfig = { apiKey: "AIzaSyCLiqB5FqygKqPwLlctFsvQBP58fHontnc", authDomain: "biblicallanguagequizbot.firebaseapp.com", projectId: "biblicallanguagequizbot", storageBucket: "biblicallanguagequizbot.firebasestorage.app", messagingSenderId: "1040255793336", appId: "1:1040255793336:web:83444c54330769d257dc4d" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let qPool = [], adsList = [], interstitialData = null;
-    let idx = 0, score = 0, timeLeft = 60, timerInterval;
+    let qPool = [], adsList = [], idx = 0, score = 0, timeLeft = 60, timerInterval;
+
+    // Load saved user info
+    window.onload = () => {
+        const savedName = localStorage.getItem('qal_name');
+        const savedPhone = localStorage.getItem('qal_phone');
+        if(savedName) document.getElementById('uName').value = savedName;
+        if(savedPhone) document.getElementById('uPhone').value = savedPhone;
+    };
 
     async function startApp() {
         const name = document.getElementById('uName').value;
-        if(!name) return alert("እባክዎ ስምዎን ያስገቡ!");
+        const phone = document.getElementById('uPhone').value;
+        if(!name || !phone) return alert("እባክዎ ስም እና ስልክ ያስገቡ!");
+        
+        // Save for next time
+        localStorage.setItem('qal_name', name);
+        localStorage.setItem('qal_phone', phone);
+
         try {
-            const configSnap = await db.collection("ads").doc("config").get();
-            if(configSnap.exists) adsList = configSnap.data().list;
-            const intSnap = await db.collection("ads").doc("interstitial").get();
-            if(intSnap.exists) interstitialData = intSnap.data();
             const qSnap = await db.collection("questions").get();
             qSnap.forEach(doc => qPool.push(doc.data()));
-            qPool = qPool.sort(() => 0.5 - Math.random()).slice(0, 5);
+            qPool = qPool.sort(() => 0.5 - Math.random()).slice(0, 25); // 25 Questions
+            
+            const adSnap = await db.collection("ads").doc("config").get();
+            if(adSnap.exists) adsList = adSnap.data().list;
+
             document.getElementById('step-reg').classList.add('hidden');
             showQ();
         } catch(e) { alert("መረጃ መጫን አልተቻለም!"); }
     }
 
-    function startTimer() {
-        clearInterval(timerInterval);
-        timeLeft = 60;
-        const display = document.getElementById('timer-container');
-        display.style.color = 'var(--primary)';
-        display.innerText = timeLeft;
-
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            display.innerText = timeLeft;
-            if(timeLeft <= 10) display.style.color = 'var(--danger)';
-            if(timeLeft <= 0) {
-                clearInterval(timerInterval);
-                submitAns('TIMEOUT');
-            }
-        }, 1000);
-    }
-
-    function updateAds() {
-        if(!adsList || adsList.length === 0) return;
-        ['slot-top', 'slot-bottom'].forEach(slotId => {
-            const randomAd = adsList[Math.floor(Math.random() * adsList.length)];
-            const slot = document.getElementById(slotId);
-            if(slot) slot.innerHTML = `<img src="${randomAd.img}" class="ad-media">`;
-        });
-    }
-
     function showQ() {
-        updateAds();
-        startTimer();
+        if (idx > 0 && idx % 3 === 0) return showAdBreak();
+
+        const card = document.getElementById('main-card');
+        card.classList.remove('slide-out');
+        card.classList.add('slide-in');
+
         document.getElementById('step-quiz').classList.remove('hidden');
         const q = qPool[idx];
         document.getElementById('qText').innerText = q.text;
+        document.getElementById('animal-status').innerText = "🐑"; // Reset animal
+
         let html = '';
         const labels = ["ሀ", "ለ", "ሐ", "መ"];
         q.options.forEach((opt, i) => {
@@ -194,35 +167,83 @@
                     </button>`;
         });
         document.getElementById('options-container').innerHTML = html;
+        startTimer();
     }
 
     function submitAns(ans) {
         clearInterval(timerInterval);
         const correct = qPool[idx].correct;
+        const card = document.getElementById('main-card');
+
         if(ans === correct) {
             score++;
+            document.getElementById('animal-status').innerText = "🦁"; // Lion on correct
             document.getElementById('snd-correct').play().catch(()=>{});
         } else {
+            document.getElementById('animal-status').innerText = "🐑"; // Remains lamb
             document.getElementById('snd-wrong').play().catch(()=>{});
         }
+
         idx++;
         setTimeout(() => {
-            if(idx < qPool.length) showQ(); else showInterstitial();
+            card.classList.add('slide-out');
+            setTimeout(() => {
+                if(idx < qPool.length) showQ(); else showResult();
+            }, 300);
         }, 600);
     }
 
-    function showInterstitial() {
-        document.getElementById('step-quiz').classList.add('hidden');
-        if(!interstitialData) return finish();
-        const overlay = document.getElementById('interstitial-overlay');
-        overlay.style.display = 'flex';
-        document.getElementById('interstitial-content').innerHTML = `<img src="${interstitialData.img}" style="width:100%; height:100%; object-fit:cover;">`;
-        setTimeout(() => { overlay.style.display = 'none'; finish(); }, 3000);
+    function startTimer() {
+        timeLeft = 60;
+        document.getElementById('timer-box').innerText = timeLeft;
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-box').innerText = timeLeft;
+            if(timeLeft <= 0) { clearInterval(timerInterval); submitAns('TIMEOUT'); }
+        }, 1000);
     }
 
-    function finish() {
-        document.getElementById('finalScore').innerText = Math.round((score/qPool.length)*100);
+    function showAdBreak() {
+        document.getElementById('ad-break').style.display = 'flex';
+        const ad = adsList[Math.floor(Math.random() * adsList.length)];
+        document.getElementById('ad-content').innerHTML = `<img src="${ad.img}" style="width:100%; height:100%; object-fit:cover;">`;
+    }
+
+    function closeAd() {
+        document.getElementById('ad-break').style.display = 'none';
+        showQ();
+    }
+
+    function showResult() {
+        document.getElementById('step-quiz').classList.add('hidden');
         document.getElementById('step-res').classList.remove('hidden');
+        const finalPct = Math.round((score/qPool.length)*100);
+        document.getElementById('finalScore').innerText = finalPct + "%";
+        
+        if(finalPct >= 90) {
+            document.getElementById('roll-section').classList.remove('hidden');
+            document.getElementById('res-msg').innerText = "ድንቅ ነው! አሸናፊ ነዎት።";
+        }
+    }
+
+    function runLottery() {
+        const btn = document.getElementById('roll-btn');
+        const wheel = document.getElementById('roll-wheel');
+        btn.disabled = true;
+        wheel.style.display = 'block';
+        
+        setTimeout(() => {
+            wheel.style.animation = 'none';
+            const win = Math.random() < 0.1; // 10% win chance
+            if(win) {
+                wheel.innerText = "💰";
+                alert("እንኳን ደስ አለዎት! የሞባይል ካርድ እጣ ደርሶዎታል። ስልክዎን እናረጋግጣለን።");
+            } else {
+                wheel.innerText = "❌";
+                alert("ለዛሬ አልደረሰዎትም፣ ነገ እንደገና ይሞክሩ!");
+            }
+        }, 3000);
     }
 </script>
 </body>
