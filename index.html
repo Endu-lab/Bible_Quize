@@ -28,51 +28,61 @@
             height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center;
         }
 
-        /* 1. Header & Logo (Fixed) */
+        /* 1. Header & Bold Logo (Centered) */
         .app-header {
-            position: fixed; top: 0; width: 100%; height: 60px;
-            background: white; display: flex; justify-content: space-between;
-            align-items: center; padding: 0 20px; box-sizing: border-box;
-            z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed; top: 0; width: 100%; height: 80px;
+            background: white; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; 
+            z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        /* 2. Moving News Ticker (Promotion) */
-        .news-ticker {
-            position: fixed; top: 60px; width: 100%; background: var(--primary);
-            color: white; overflow: hidden; white-space: nowrap; padding: 5px 0; z-index: 900;
+        .app-header h1 {
+            color: var(--primary); margin: 0; font-size: 2.8em; font-weight: 900;
+            letter-spacing: 2px;
         }
-        .news-ticker p { display: inline-block; animation: ticker 15s linear infinite; margin: 0; }
+
+        /* 2. Moving News Ticker */
+        .news-ticker {
+            position: fixed; top: 80px; width: 100%; background: var(--primary);
+            color: white; overflow: hidden; white-space: nowrap; padding: 6px 0; z-index: 900;
+            font-size: 0.9em;
+        }
+        .news-ticker p { display: inline-block; animation: ticker 18s linear infinite; margin: 0; }
         @keyframes ticker { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
-        /* 3. Main Quiz Card (PWA Style) */
+        /* 3. Main Card Style */
         .container { 
-            background: white; width: 90%; max-width: 400px; 
-            padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            background: white; width: 92%; max-width: 400px; 
+            padding: 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.15);
             text-align: center; position: relative; z-index: 100;
-            transition: all 0.4s ease; margin-top: 40px;
+            margin-top: 100px;
         }
 
-        /* Animated Animal Placeholder */
-        .animal-icon { font-size: 50px; margin-bottom: 10px; transition: transform 0.3s; }
-        .correct-jump { animation: jump 0.5s ease; }
-        @keyframes jump { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-20px);} }
+        /* Animal & UI */
+        .animal-icon { font-size: 55px; margin-bottom: 10px; }
+        #timer-display { 
+            font-weight: 900; color: var(--error); font-size: 1.5em; 
+            background: #fff0f0; border: 2px solid var(--error);
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px;
+        }
 
-        /* Timer UI */
-        #timer-box { font-weight: bold; color: var(--error); font-size: 1.2em; border: 2px solid #eee; padding: 5px 15px; border-radius: 15px; }
-
-        /* Form & Buttons */
-        input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
-        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1em; margin-top: 10px; }
-        .opt-btn { background: #f9f9f9; color: #333; text-align: left; display: flex; align-items: center; border: 2px solid #eee; }
-        .label-box { background: var(--primary); color: white; min-width: 30px; height: 30px; border-radius: 5px; margin-right: 15px; display: flex; align-items: center; justify-content: center; }
+        /* Input & Buttons */
+        input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 2px solid #eee; box-sizing: border-box; font-size: 1em; outline: none; }
+        input:focus { border-color: var(--primary); }
+        .btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; cursor: pointer; font-weight: bold; font-size: 1.1em; margin-top: 10px; transition: 0.2s; }
+        .btn:active { transform: scale(0.97); }
+        .opt-btn { background: #ffffff; color: #333; text-align: left; display: flex; align-items: center; border: 2px solid #eee; }
+        .label-box { background: var(--primary); color: white; min-width: 34px; height: 34px; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
         /* Ads Overlay */
-        #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        #ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* Reward Roll */
+        /* Reward Zone */
         #roll-zone { display: none; padding: 20px; }
-        .gift-box { font-size: 80px; animation: wobble 1s infinite; cursor: pointer; }
-        @keyframes wobble { 0%, 100% {transform: rotate(0);} 25% {transform: rotate(5deg);} 75% {transform: rotate(-5deg);} }
+        .gift-box { font-size: 90px; cursor: pointer; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.1);} 100% {transform: scale(1);} }
 
         .hidden { display: none; }
     </style>
@@ -83,55 +93,54 @@
     <audio id="snd-wrong" src="https://raw.githubusercontent.com/Endu-lab/Bible_Quize/main/assets/sounds/wrong.mp3"></audio>
 
     <div class="app-header">
-        <h2 style="color:var(--primary); margin:0;">ቃሉ!</h2>
-        <div id="timer-box" class="hidden">60</div>
+        <h1>ቃል</h1>
     </div>
 
     <div class="news-ticker">
-        <p>🌟 ቃሉን ይፈትኑ፣ እውቀትዎን ያሳድጉ እና ይሸለሙ! ጓደኞችዎን ይጋብዙ እና ተጨማሪ ዕድሎችን ያግኙ! 🌟</p>
+        <p>🌟 እንኳን ደስ አለዎት! አዳዲስ አሸናፊዎች እየተመዘገቡ ነው። • ጓደኞችዎን ይጋብዙ እና ተጨማሪ የዕጣ ዕድሎችን ያግኙ! • ቃሉን ይፈትኑ ይሸለሙ! 🌟</p>
     </div>
 
     <div id="ad-overlay">
-        <h3>የማስታወቂያ እረፍት</h3>
-        <div id="ad-box" style="width:300px; height:250px; background:#f0f0f0; margin:20px 0; border-radius:15px; overflow:hidden;"></div>
-        <p>ለጥቂት ሰከንዶች ይጠብቁ...</p>
-        <button id="close-ad-btn" class="btn" style="width:200px; display:none;" onclick="hideAd()">ቀጥል ➔</button>
+        <h3 style="color:var(--primary);">ማስታወቂያ</h3>
+        <div id="ad-box" style="width:320px; height:320px; background:#f5f5f5; margin:20px 0; border-radius:20px; overflow:hidden; border:1px solid #ddd;"></div>
+        <p id="ad-timer">እባክዎ ለ 5 ሰከንድ ይጠብቁ...</p>
+        <button id="close-ad-btn" class="btn" style="width:220px; display:none;" onclick="hideAd()">ቀጥል ➔</button>
     </div>
 
-    <div class="container" id="quiz-card">
+    <div class="container" id="app-card">
         <div class="animal-icon" id="pet">🐑</div>
 
         <div id="reg-screen">
-            <h3>እንኳን ደህና መጡ!</h3>
+            <h3 style="color:var(--primary);">የመግቢያ መረጃ</h3>
             <input type="text" id="uName" placeholder="ሙሉ ስም">
             <input type="tel" id="uPhone" placeholder="ስልክ ቁጥር">
             <button class="btn" onclick="initApp()">መፈተን ጀምር ➔</button>
         </div>
 
         <div id="quiz-screen" class="hidden">
-            <p id="qText" style="font-weight:bold; min-height:60px;"></p>
+            <div id="timer-display">20</div>
+            <p id="qText" style="font-weight:bold; font-size:1.15em; min-height:70px;"></p>
             <div id="options-list"></div>
         </div>
 
         <div id="result-screen" class="hidden">
-            <h2>ውጤትዎ</h2>
-            <h1 id="score-val" style="color:var(--accent); font-size:3em;">0%</h1>
+            <h2 style="color:var(--primary);">የፈተና ውጤት</h2>
+            <h1 id="score-val" style="color:var(--accent); font-size:4em; margin:10px 0;">0%</h1>
             <div id="roll-zone">
-                <p>ድንቅ ነው! የሎተሪ እጣዎን ይሞክሩ</p>
+                <p style="font-weight:bold;">ድንቅ ውጤት! ዕጣዎን ይሞክሩ</p>
                 <div class="gift-box" onclick="startRoll()">🎁</div>
-                <p id="roll-status">ሳጥኑን ይጫኑ!</p>
+                <p id="roll-status" style="color:var(--success); font-weight:bold;">ሳጥኑን ይጫኑ!</p>
             </div>
-            <button class="btn" onclick="location.reload()">እንደገና ሞክር</button>
+            <button class="btn" onclick="location.reload()" style="background:#888;">እንደገና ተጫወት</button>
         </div>
     </div>
 
 <script>
-    // Firebase Config
     const firebaseConfig = { apiKey: "AIzaSyCLiqB5FqygKqPwLlctFsvQBP58fHontnc", authDomain: "biblicallanguagequizbot.firebaseapp.com", projectId: "biblicallanguagequizbot", storageBucket: "biblicallanguagequizbot.firebasestorage.app", messagingSenderId: "1040255793336", appId: "1:1040255793336:web:83444c54330769d257dc4d" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let questions = [], ads = [], currentIdx = 0, score = 0, timer, timeLeft = 60;
+    let questions = [], ads = [], currentIdx = 0, score = 0, timer, timeLeft = 20;
 
     // LocalStorage: Remember user
     window.onload = () => {
@@ -156,7 +165,6 @@
             if(adSnap.exists) ads = adSnap.data().list;
 
             document.getElementById('reg-screen').classList.add('hidden');
-            document.getElementById('timer-box').classList.remove('hidden');
             renderQuestion();
         } catch(e) { alert("መረጃ መጫን አልተቻለም!"); }
     }
@@ -166,8 +174,7 @@
         if (currentIdx > 0 && currentIdx % 3 === 0) return showAd();
 
         const q = questions[currentIdx];
-        const screen = document.getElementById('quiz-screen');
-        screen.classList.remove('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
         document.getElementById('qText').innerText = q.text;
         
         let btns = '';
@@ -182,11 +189,15 @@
     }
 
     function startTimer() {
-        timeLeft = 60;
+        timeLeft = 20; // 20 Seconds Updated
         clearInterval(timer);
+        document.getElementById('timer-display').innerText = timeLeft;
         timer = setInterval(() => {
             timeLeft--;
-            document.getElementById('timer-box').innerText = timeLeft;
+            document.getElementById('timer-display').innerText = timeLeft;
+            if(timeLeft <= 5) document.getElementById('timer-display').style.color = "red";
+            else document.getElementById('timer-display').style.color = "var(--error)";
+            
             if(timeLeft <= 0) { clearInterval(timer); checkAnswer('TIMEOUT'); }
         }, 1000);
     }
@@ -198,22 +209,21 @@
 
         if(ans === correct) {
             score++;
-            pet.innerText = "🦁"; // Lion for correct
-            pet.classList.add('correct-jump');
+            pet.innerText = "🦁"; 
             document.getElementById('snd-correct').play().catch(()=>{});
         } else {
-            pet.innerText = "🐑"; // Lamb for wrong
+            pet.innerText = "🐑"; 
             document.getElementById('snd-wrong').play().catch(()=>{});
         }
 
         setTimeout(() => {
-            pet.classList.remove('correct-jump');
             currentIdx++;
             if(currentIdx < questions.length) renderQuestion(); else finishQuiz();
-        }, 800);
+        }, 700);
     }
 
     function showAd() {
+        document.getElementById('quiz-screen').classList.add('hidden');
         const overlay = document.getElementById('ad-overlay');
         const adBox = document.getElementById('ad-box');
         const closeBtn = document.getElementById('close-ad-btn');
@@ -223,7 +233,16 @@
         const randomAd = ads[Math.floor(Math.random() * ads.length)];
         adBox.innerHTML = `<img src="${randomAd.img}" style="width:100%; height:100%; object-fit:cover;">`;
 
-        setTimeout(() => { closeBtn.style.display = 'block'; }, 4000); // 4 seconds forced ad
+        let adWait = 5;
+        const adInt = setInterval(() => {
+            adWait--;
+            document.getElementById('ad-timer').innerText = `እባክዎ ለ ${adWait} ሰከንድ ይጠብቁ...`;
+            if(adWait <= 0) {
+                clearInterval(adInt);
+                document.getElementById('ad-timer').innerText = "ማስታወቂያው አልቋል!";
+                closeBtn.style.display = 'block';
+            }
+        }, 1000);
     }
 
     function hideAd() {
@@ -233,7 +252,6 @@
 
     function finishQuiz() {
         document.getElementById('quiz-screen').classList.add('hidden');
-        document.getElementById('timer-box').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
         const finalPct = Math.round((score/questions.length)*100);
         document.getElementById('score-val').innerText = finalPct + "%";
@@ -244,8 +262,8 @@
     function startRoll() {
         const gift = document.querySelector('.gift-box');
         const status = document.getElementById('roll-status');
-        gift.style.animation = "spin 0.5s infinite linear";
-        status.innerText = "እየተሽከረከረ ነው...";
+        gift.style.animation = "spin 0.4s infinite linear";
+        status.innerText = "እጣ እየወጣ ነው...";
 
         setTimeout(() => {
             gift.style.animation = "none";
@@ -253,10 +271,10 @@
             if(win) {
                 gift.innerText = "💰";
                 status.innerText = "እንኳን ደስ አለዎት! አሸንፈዋል!";
-                alert("የ50 ብር ካርድ አሸንፈዋል! በቅርቡ በስልክዎ ይላክለታል።");
+                alert("የሞባይል ካርድ እጣ ደርሶዎታል። ስልክዎን እናረጋግጣለን!");
             } else {
                 gift.innerText = "📦";
-                status.innerText = "ለዛሬ ዕድል አልቀናዎትም!";
+                status.innerText = "ለዛሬ ዕድል የለም!";
             }
         }, 2500);
     }
@@ -265,7 +283,7 @@
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW failed', err));
+            navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error', err));
         });
     }
 </script>
