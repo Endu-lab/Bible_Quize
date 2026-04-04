@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
-        :root { --primary: #1a2a6c; --accent: #f39c12; --sky-blue: #87CEEB; --white: #ffffff; }
+        :root { --primary: #1a2a6c; --accent: #f39c12; --sky-blue: #87CEEB; --white: #ffffff; --success: #28a745; }
         html, body { margin: 0; padding: 0; height: 100%; width: 100%; display: flex; flex-direction: column; background: linear-gradient(180deg, var(--sky-blue) 0%, #f0f8ff 100%); font-family: 'Nyala', 'Segoe UI', sans-serif; overflow: hidden; }
         header { flex-shrink: 0; background: var(--white); box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 1000; }
         .logo-box { height: 60px; display: flex; justify-content: center; align-items: center; }
@@ -40,7 +40,7 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
@@ -110,18 +110,15 @@
         localStorage.setItem('un', n); localStorage.setItem('up', p);
 
         try {
-            // Load Settings
             const rewSnap = await db.collection("config").doc("rewards").get();
             if(rewSnap.exists) {
                 winChance = rewSnap.data().winRate || 15;
                 minToRoll = rewSnap.data().minScore || 90;
             }
 
-            // Load Ads
             const adSnap = await db.collection("ads").doc("config").get();
             if(adSnap.exists) ads = adSnap.data().list || [];
 
-            // Load Questions
             const qSnap = await db.collection("questions").get();
             qSnap.forEach(d => qPool.push(d.data()));
             qPool = qPool.sort(() => 0.5 - Math.random()).slice(0, 25);
@@ -129,7 +126,6 @@
             document.getElementById('scr-start').classList.add('hidden');
             renderQ();
             
-            // Start Auto-Changing Ads Every 7 Seconds
             updateBanner();
             setInterval(updateBanner, 7000); 
 
@@ -154,7 +150,6 @@
         const adBox = document.getElementById('ad-banner-box');
         const adAudio = document.getElementById('ad-audio');
 
-        // Dynamic Image and Layout
         adBox.innerHTML = `
             <div style="display:flex; align-items:center; gap:12px; animation: fadeIn 0.8s;">
                 <img src="${r.img}" class="ad-banner-img" onclick="window.open('${r.link || '#'}', '_blank')">
@@ -165,10 +160,9 @@
             </div>
         `;
 
-        // Play Audio if it exists for this ad
         if(r.audio && r.audio.trim() !== "") {
             adAudio.src = r.audio;
-            adAudio.play().catch(e => console.log("Audio play blocked until user interaction"));
+            adAudio.play().catch(e => {});
         }
     }
 
@@ -218,28 +212,56 @@
     function startRoll() {
         const gift = document.getElementById('gift-box');
         const rollSection = document.getElementById('roll-section');
+        const userPhone = localStorage.getItem('up') || "---";
+        const userName = localStorage.getItem('un') || "ተማሪ";
         
         gift.style.animation = "shake 0.8s infinite";
         rollSection.querySelector('p').innerText = "ዕጣዎን በመፈለግ ላይ...";
 
-        setTimeout(() => {
+        setTimeout(async () => {
             gift.style.animation = "none";
             const win = (Math.random() * 100) < winChance;
 
             if (win) {
+                // አረንጓዴ የድል ገጽ
+                rollSection.style.background = "#d4edda"; 
+                rollSection.style.padding = "25px";
+                rollSection.style.borderRadius = "20px";
+                rollSection.style.border = "3px solid #28a745";
+                rollSection.style.marginTop = "20px";
+                rollSection.style.animation = "fadeIn 1s";
+
                 rollSection.innerHTML = `
-                    <div style="font-size:80px; margin-bottom:10px; animation: fadeIn 0.5s;">🎁</div>
-                    <h2 style="color:#27ae60; margin:5px 0;">አሸንፈዋል!</h2>
-                    <p style="font-weight:bold; font-size:1.1em; color:#1a2a6c;">እንኳን ደስ አሎት! የ 5 ብር ካርድ አግኝተዋል!</p>
+                    <div style="font-size:90px; margin-bottom:10px;">🎉</div>
+                    <h2 style="color:#28a745; margin:5px 0;">እንኳን ደስ አሎት!</h2>
+                    <p style="font-weight:bold; font-size:1.2em; color:#155724;">የ 5 ብር ካርድ አግኝተዋል!</p>
+                    <div style="background:#fff; padding:15px; border-radius:12px; margin:15px 0; border:1px dashed #28a745;">
+                        <span style="color:#777; font-size:0.9em;">ሽልማቱ የሚላክበት ስልክ፦</span><br>
+                        <strong style="font-size:1.4em; color:#1a2a6c;">${userPhone}</strong>
+                    </div>
+                    <p style="font-size:0.9em; color:#555;">መረጃው ተመዝግቧል። በ 24 ሰዓት ውስጥ ካርዱ ይላክለታል።</p>
                 `;
+
+                // አሸናፊውን ወደ Firebase መላክ
+                try {
+                    await db.collection("winners").add({
+                        name: userName,
+                        phone: userPhone,
+                        prize: "5 ETB Card",
+                        status: "Pending",
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch(e) { console.error("Winner log failed:", e); }
+
             } else {
                 rollSection.innerHTML = `
-                    <div style="font-size:80px; margin-bottom:10px; opacity:0.7;">😔</div>
+                    <div style="font-size:80px; margin-bottom:10px; opacity:0.6;">😔</div>
                     <h2 style="color:#e74c3c; margin:5px 0;">አልደረሰዎትም!</h2>
-                    <p>ስለተሳተፉ እናመሰግናለን፤ በሚቀጥለው ይሞክሩ።</p>
+                    <p style="color:#666;">ጥሩ ሙከራ ነው! በሚቀጥለው ጊዜ ይሳካለዎታል ብለን ተስፋ እናደርጋለን።</p>
+                    <button class="btn" onclick="location.reload()" style="background:#888; width:auto; padding:10px 25px;">እንደገና</button>
                 `;
             }
-        }, 2500);
+        }, 3000);
     }
 </script>
 </body>
