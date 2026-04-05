@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ቃል (Qal) - Bible Quiz</title>
     
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a2a6c">
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
@@ -90,6 +93,7 @@
     </footer>
 
 <script>
+    // Firebase ማዋቀሪያ
     const firebaseConfig = { 
         apiKey: "AIzaSyCLiqB5FqygKqPwLlctFsvQBP58fHontnc", 
         authDomain: "biblicallanguagequizbot.firebaseapp.com", 
@@ -100,6 +104,15 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    // --- SERVICE WORKER REGISTRATION (ለ PWA አስፈላጊ የሆነው) ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker Registered'))
+                .catch(err => console.log('Service Worker Registration Failed', err));
+        });
+    }
 
     let qPool = [], ads = [], qIdx = 0, score = 0, timer, tLeft = 20;
     let winChance = 15, minToRoll = 90;
@@ -125,7 +138,6 @@
 
             document.getElementById('scr-start').classList.add('hidden');
             renderQ();
-            
             updateBanner();
             setInterval(updateBanner, 7000); 
 
@@ -223,7 +235,6 @@
             const win = (Math.random() * 100) < winChance;
 
             if (win) {
-                // አረንጓዴ የድል ገጽ
                 rollSection.style.background = "#d4edda"; 
                 rollSection.style.padding = "25px";
                 rollSection.style.borderRadius = "20px";
@@ -242,7 +253,6 @@
                     <p style="font-size:0.9em; color:#555;">መረጃው ተመዝግቧል። በ 24 ሰዓት ውስጥ ካርዱ ይላክለታል።</p>
                 `;
 
-                // አሸናፊውን ወደ Firebase መላክ
                 try {
                     await db.collection("winners").add({
                         name: userName,
