@@ -7,16 +7,15 @@ const assets = [
   './icon-512.png'
 ];
 
-// መረጃዎችን በስልኩ ሜሞሪ ውስጥ መጫን (Install)
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(cacheName).then(cache => {
-      return cache.addAll(assets);
+      // አንድ ፋይል ባይኖር እንኳን እንዳይከሽፍ በ isolate መልክ መጫን ይሻላል
+      return cache.addAll(assets).catch(err => console.log("Cache error:", err));
     })
   );
 });
 
-// ኢንተርኔት በሌለበት ጊዜ አፑ እንዲሰራ ማድረግ (Fetch)
 self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(res => {
