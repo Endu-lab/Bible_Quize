@@ -1,4 +1,4 @@
-const cacheName = 'qal-bible-quiz-v1';
+const cacheName = 'qal-bible-quiz-v3';
 const assets = [
   './',
   './index.html',
@@ -7,19 +7,21 @@ const assets = [
   './icon-512.png'
 ];
 
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(cacheName).then(cache => {
-      // አንድ ፋይል ባይኖር እንኳን እንዳይከሽፍ በ isolate መልክ መጫን ይሻላል
-      return cache.addAll(assets).catch(err => console.log("Cache error:", err));
+// መተግበሪያውን በስልኩ ወይም በኮምፒውተሩ ላይ መጫን
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(cacheName).then((cache) => {
+      console.log('አይኮኖች እና ፋይሎች በመጫን ላይ ናቸው...');
+      return cache.addAll(assets);
     })
   );
 });
 
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(res => {
-      return res || fetch(e.request);
+// ያለ ኢንተርኔት እንዲሰራ መረጃዎችን መጥራት
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
     })
   );
 });
