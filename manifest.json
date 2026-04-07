@@ -1,0 +1,44 @@
+{
+  "short_name": "ቃል አፕ",
+  "name": "ቃል - የመጽሐፍ ቅዱስ ጥያቄ",
+  "description": "የመጽሐፍ ቅዱስ ጥያቄና መልስ በሽልማት ጋር",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#1a2a6c",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "./",
+  "theme_color": "#1a2a6c",
+  "id": "qal-bible-quiz-v2-unique",
+  "categories": [
+    "education",
+    "games"
+  ],
+  "shortcuts": [
+    {
+      "name": "መፈተን ጀምር",
+      "short_name": "ጀምር",
+      "description": "ወደ ፈተናው በቀጥታ ይግቡ",
+      "url": "./index.html",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
