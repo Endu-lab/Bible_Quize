@@ -1,44 +1,51 @@
 {
+  "name": "ቃል - የመጽሐፍ ቅዱስ ፈተና",
   "short_name": "ቃል አፕ",
-  "name": "ቃል - የመጽሐፍ ቅዱስ ጥያቄ",
-  "description": "የመጽሐፍ ቅዱስ ጥያቄና መልስ በሽልማት ጋር",
+  "description": "የመጽሐፍ ቅዱስ ጥያቄና መልስ በሽልማት ጋር - ቃሉን ይፈትኑ እና እውቀትዎን ያሳድጉ",
+  "id": "com.endu.qal.biblequiz.v2",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a2a6c",
+  "theme_color": "#1a2a6c",
+  "orientation": "portrait",
+  "scope": "./",
+  "lang": "am",
+  "dir": "ltr",
   "icons": [
     {
       "src": "icon-192.png",
-      "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "icon-512.png",
-      "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ],
-  "start_url": "./index.html",
-  "background_color": "#1a2a6c",
-  "display": "standalone",
-  "orientation": "portrait",
-  "scope": "./",
-  "theme_color": "#1a2a6c",
-  "id": "qal-bible-quiz-v2-unique",
-  "categories": [
-    "education",
-    "games"
   ],
   "shortcuts": [
     {
       "name": "መፈተን ጀምር",
       "short_name": "ጀምር",
-      "description": "ወደ ፈተናው በቀጥታ ይግቡ",
+      "description": "ወደ ጥያቄዎቹ በቀጥታ ይሂዱ",
       "url": "./index.html",
-      "icons": [
-        {
-          "src": "icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     }
-  ]
+  ],
+  "categories": ["education", "games"],
+  "prefer_related_applications": false
 }
