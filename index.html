@@ -9,7 +9,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json?v=2.3">
     <meta name="theme-color" content="#1a2a6c">
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -27,21 +27,18 @@
         }
 
         header { flex-shrink: 0; background: var(--white); box-shadow: 0 2px 12px rgba(0,0,0,0.15); z-index: 1000; }
-
         .logo-box { height: 65px; display: flex; justify-content: center; align-items: center; }
         .logo-box h1 { color: var(--primary); font-size: 3em; font-weight: 900; margin: 0; letter-spacing: 1px; }
 
         .ticker-box { background: var(--primary); color: white; padding: 6px 0; overflow: hidden; white-space: nowrap; font-size: 1em; border-bottom: 2px solid var(--accent); }
         .ticker-box p { display: inline-block; animation: ticker 22s linear infinite; margin: 0; font-weight: bold; }
-        
         @keyframes ticker { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
-        /* ማስተካከያ፡ padding-top ጨምሬያለሁ ሳጥኑ ዝቅ እንዲል */
         main { 
             flex: 1; display: flex; flex-direction: column; 
             justify-content: flex-start; 
             align-items: center; 
-            padding: 40px 15px 120px 15px; /* ከላይ 40px ክፍተት አለው */
+            padding: 40px 15px 120px 15px; 
             overflow-y: auto; -webkit-overflow-scrolling: touch; 
         }
 
@@ -51,7 +48,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.12); 
             text-align: center; box-sizing: border-box;
             animation: fadeIn 0.6s ease-out;
-            margin-top: 20px; /* ተጨማሪ ዝቅ እንዲል */
+            margin-top: 20px;
         }
 
         footer { 
@@ -76,10 +73,8 @@
             0% { transform: translate(1px, 1px) rotate(0deg); }
             20% { transform: translate(-3px, 0px) rotate(1deg); }
             40% { transform: translate(1px, -1px) rotate(1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -141,7 +136,6 @@
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            // Version changed to 2.2 to force Chrome update
             navigator.serviceWorker.register('./sw.js?v=2.2')
                 .then(reg => console.log('Service Worker Registered'))
                 .catch(err => console.log('Service Worker Registration Failed', err));
@@ -162,10 +156,8 @@
                 winChance = rewSnap.data().winRate || 15;
                 minToRoll = rewSnap.data().minScore || 90;
             }
-
             const adSnap = await db.collection("ads").doc("config").get();
             if(adSnap.exists) ads = adSnap.data().list || [];
-
             const qSnap = await db.collection("questions").get();
             qSnap.forEach(d => qPool.push(d.data()));
             qPool = qPool.sort(() => 0.5 - Math.random()).slice(0, 25);
@@ -174,7 +166,6 @@
             renderQ();
             updateBanner();
             setInterval(updateBanner, 7000); 
-
         } catch(e) { console.error(e); alert("ግንኙነት ተቋርጧል!"); }
     }
 
@@ -205,7 +196,6 @@
                 </div>
             </div>
         `;
-
         if(r.audio && r.audio.trim() !== "") {
             adAudio.src = r.audio;
             adAudio.play().catch(e => {});
@@ -284,7 +274,6 @@
                         <strong style="font-size:1.2em; color:#1a2a6c;">${userPhone}</strong>
                     </div>
                 `;
-
                 try {
                     await db.collection("winners").add({
                         name: userName,
@@ -294,7 +283,6 @@
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 } catch(e) { console.error("Winner log failed:", e); }
-
             } else {
                 rollSection.innerHTML = `
                     <div style="font-size:60px; margin-bottom:10px; opacity:0.6;">😔</div>
@@ -305,6 +293,14 @@
             }
         }, 3000);
     }
+
+    // --- አዲሱ የ Install ፕሮምፕት ማነቃቂያ ---
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // ተጠቃሚው መፈተን ሲጀምር እንዲጭነው ለመጠየቅ እንጠቀምበታለን
+    });
 </script>
 </body>
 </html>
