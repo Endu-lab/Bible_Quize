@@ -1,8 +1,16 @@
 {
   "name": "ቃል - የመጽሐፍ ቅዱስ ፈተና",
   "short_name": "ቃል አፕ",
-  "id": "com.endu.qal.biblequiz.v2",
   "description": "የመጽሐፍ ቅዱስ ጥያቄና መልስ በሽልማት ጋር - ቃሉን ይፈትኑ እና እውቀትዎን ያሳድጉ",
+  "id": "com.endu.qal.biblequiz.v2",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a2a6c",
+  "theme_color": "#1a2a6c",
+  "orientation": "portrait",
+  "scope": "./",
+  "lang": "am",
+  "dir": "ltr",
   "icons": [
     {
       "src": "icon-192.png",
@@ -17,13 +25,5 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "./index.html",
-  "background_color": "#1a2a6c",
-  "display": "standalone",
-  "orientation": "portrait",
-  "scope": "./",
-  "theme_color": "#1a2a6c",
-  "lang": "am",
-  "dir": "ltr",
   "categories": ["education", "games"]
 }
