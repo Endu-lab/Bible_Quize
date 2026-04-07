@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ቃል (Qal) - Bible Quiz</title>
     
-    <link rel="manifest" href="manifest.json?v=2.4">
+    <link rel="manifest" href="manifest.json?v=2.5">
     <meta name="theme-color" content="#1a2a6c">
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -128,7 +128,7 @@
     </footer>
 
 <script>
-    // 1. Firebase Configuration
+    // 1. Firebase Setup
     const firebaseConfig = { 
         apiKey: "AIzaSyCLiqB5FqygKqPwLlctFsvQBP58fHontnc", 
         authDomain: "biblicallanguagequizbot.firebaseapp.com", 
@@ -137,19 +137,21 @@
         messagingSenderId: "1040255793336", 
         appId: "1:1040255793336:web:83444c54330769d257dc4d" 
     };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.firestore();
 
-    // 2. Service Worker Registration
+    // 2. Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js?v=2.2')
-                .then(reg => console.log('Service Worker Registered'))
-                .catch(err => console.error('Service Worker Registration Failed', err));
+            navigator.serviceWorker.register('./sw.js?v=2.3')
+                .then(reg => console.log('SW Registered'))
+                .catch(err => console.log('SW Error', err));
         });
     }
 
-    // 3. PWA Installation Logic
+    // 3. PWA Install
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
@@ -164,14 +166,17 @@
         if (outcome === 'accepted') deferredPrompt = null;
     }
 
-    // 4. Quiz App Variables
+    // 4. Game Logic
     let qPool = [], ads = [], qIdx = 0, score = 0, timer, tLeft = 20;
     let winChance = 15, minToRoll = 90;
 
     async function startApp() {
-        const n = document.getElementById('uName').value, p = document.getElementById('uPhone').value;
-        if(!n || !p) return alert("እባክዎ ስም እና ስልክ ያስገቡ!");
-        localStorage.setItem('un', n); localStorage.setItem('up', p);
+        const n = document.getElementById('uName').value;
+        const p = document.getElementById('uPhone').value;
+        if(!n || !p) return alert("ስም እና ስልክ ያስገቡ!");
+        
+        localStorage.setItem('un', n); 
+        localStorage.setItem('up', p);
 
         try {
             const rewSnap = await db.collection("config").doc("rewards").get();
@@ -181,7 +186,9 @@
             }
             const adSnap = await db.collection("ads").doc("config").get();
             if(adSnap.exists) ads = adSnap.data().list || [];
+            
             const qSnap = await db.collection("questions").get();
+            qPool = [];
             qSnap.forEach(d => qPool.push(d.data()));
             qPool = qPool.sort(() => 0.5 - Math.random()).slice(0, 25);
 
@@ -189,16 +196,18 @@
             renderQ();
             updateBanner();
             setInterval(updateBanner, 7000); 
-        } catch(e) { console.error(e); alert("ግንኙነት ተቋርጧል!"); }
+        } catch(e) { console.log(e); alert("ግንኙነት የለም!"); }
     }
 
     function renderQ() {
         document.getElementById('scr-quiz').classList.remove('hidden');
         const q = qPool[qIdx];
         document.getElementById('qText').innerText = q.text;
-        let h = ''; const labels = ["ሀ", "ለ", "ሐ", "መ"];
+        let h = ''; 
+        const labels = ["ሀ", "ለ", "ሐ", "መ"];
         q.options.forEach((opt, i) => {
-            h += `<button class="btn opt-btn" onclick="checkAns('${String.fromCharCode(65+i)}')"><div class="label">${labels[i]}</div><span>${opt}</span></button>`;
+            const code = String.fromCharCode(65+i);
+            h += `<button class="btn opt-btn" onclick="checkAns('${code}')"><div class="label">${labels[i]}</div><span>${opt}</span></button>`;
         });
         document.getElementById('opts-box').innerHTML = h;
         startTimer();
@@ -208,20 +217,18 @@
         if(!ads || ads.length === 0) return;
         const r = ads[Math.floor(Math.random() * ads.length)];
         const adBox = document.getElementById('ad-banner-box');
-        const adAudio = document.getElementById('ad-audio');
-
         adBox.innerHTML = `
             <div style="display:flex; align-items:center; gap:12px; animation: fadeIn 0.8s;">
                 <img src="${r.img}" class="ad-banner-img" onclick="window.open('${r.link || '#'}', '_blank')">
-                <div style="text-align:left; line-height:1.2; cursor:pointer;" onclick="window.open('${r.link || '#'}', '_blank')">
+                <div style="text-align:left; line-height:1.2;">
                     <div style="color:var(--primary); font-weight:bold; font-size:0.85em;">የቀኑ ማስታወቂያ</div>
-                    <div style="color:#777; font-size:0.7em;">ለመክፈት እዚህ ይንኩ</div>
+                    <div style="color:#777; font-size:0.7em;">ለመክፈት ምስሉን ይንኩ</div>
                 </div>
-            </div>
-        `;
-        if(r.audio && r.audio.trim() !== "") {
-            adAudio.src = r.audio;
-            adAudio.play().catch(e => {});
+            </div>`;
+        if(r.audio) {
+            const audio = document.getElementById('ad-audio');
+            audio.src = r.audio;
+            audio.play().catch(e => {});
         }
     }
 
@@ -264,49 +271,28 @@
             score: p, 
             timestamp: firebase.firestore.FieldValue.serverTimestamp() 
         });
-        
         if(p >= minToRoll) document.getElementById('roll-section').classList.remove('hidden');
     }
 
     function startRoll() {
         const gift = document.getElementById('gift-box');
         const rollSection = document.getElementById('roll-section');
-        const userPhone = localStorage.getItem('up') || "---";
-        const userName = localStorage.getItem('un') || "ተማሪ";
-        
         gift.style.animation = "shake 0.8s infinite";
         rollSection.querySelector('p').innerText = "ዕጣዎን በመፈለግ ላይ...";
 
         setTimeout(async () => {
             gift.style.animation = "none";
             const win = (Math.random() * 100) < winChance;
-
             if (win) {
-                rollSection.style.background = "#d4edda"; 
-                rollSection.style.padding = "20px";
-                rollSection.style.borderRadius = "20px";
-                rollSection.style.border = "3px solid #28a745";
-                rollSection.innerHTML = `
-                    <div style="font-size:70px; margin-bottom:10px;">🎉</div>
-                    <h2 style="color:#28a745; margin:5px 0;">እንኳን ደስ አሎት!</h2>
-                    <p style="font-weight:bold; font-size:1.1em; color:#155724;">የ 5 ብር ካርድ አግኝተዋል!</p>
-                    <div style="background:#fff; padding:10px; border-radius:12px; margin:10px 0; border:1px dashed #28a745;">
-                        <span style="color:#777; font-size:0.8em;">ሽልማቱ የሚላክበት ስልክ፦</span><br>
-                        <strong style="font-size:1.2em; color:#1a2a6c;">${userPhone}</strong>
-                    </div>
-                `;
-                try {
-                    await db.collection("winners").add({
-                        name: userName, phone: userPhone, prize: "5 ETB Card", status: "Pending",
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                } catch(e) { console.error(e); }
+                rollSection.innerHTML = `<h2 style="color:#28a745;">እንኳን ደስ አሎት! 🎉</h2><p>የ 5 ብር ካርድ አግኝተዋል!</p>`;
+                await db.collection("winners").add({
+                    name: localStorage.getItem('un'),
+                    phone: localStorage.getItem('up'),
+                    prize: "5 ETB Card",
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
             } else {
-                rollSection.innerHTML = `
-                    <div style="font-size:60px; margin-bottom:10px; opacity:0.6;">😔</div>
-                    <h2 style="color:#e74c3c; margin:5px 0;">አልደረሰዎትም!</h2>
-                    <button class="btn" onclick="location.reload()" style="background:#888; width:auto; padding:10px 20px;">እንደገና</button>
-                `;
+                rollSection.innerHTML = `<h2 style="color:#e74c3c;">አልደረሰዎትም 😔</h2><button class="btn" onclick="location.reload()">እንደገና</button>`;
             }
         }, 3000);
     }
