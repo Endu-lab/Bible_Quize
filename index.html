@@ -2,28 +2,30 @@
 <html lang="am">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ቃል (Qal) - Bible Quiz</title>
     
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
-    <link rel="manifest" href="manifest.json?v=2.3">
+    <link rel="manifest" href="manifest.json?v=2.4">
     <meta name="theme-color" content="#1a2a6c">
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
     <style>
-        :root { --primary: #1a2a6c; --accent: #f39c12; --sky-blue: #87CEEB; --white: #ffffff; --success: #28a745; }
+        :root { 
+            --primary: #1a2a6c; 
+            --accent: #f39c12; 
+            --sky-blue: #87CEEB; 
+            --white: #ffffff; 
+            --success: #28a745; 
+        }
         
         html, body { 
             margin: 0; padding: 0; height: 100%; width: 100%; 
             display: flex; flex-direction: column; 
             background: linear-gradient(180deg, var(--sky-blue) 0%, #f0f8ff 100%); 
             font-family: 'Nyala', 'Segoe UI', sans-serif; 
-            overflow: hidden; 
+            overflow-x: hidden; 
         }
 
         header { flex-shrink: 0; background: var(--white); box-shadow: 0 2px 12px rgba(0,0,0,0.15); z-index: 1000; }
@@ -38,13 +40,14 @@
             flex: 1; display: flex; flex-direction: column; 
             justify-content: flex-start; 
             align-items: center; 
-            padding: 40px 15px 120px 15px; 
-            overflow-y: auto; -webkit-overflow-scrolling: touch; 
+            padding: 40px 15px 140px 15px; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; 
         }
 
         .quiz-card { 
             background: var(--white); width: 100%; max-width: 440px; 
-            padding: 20px 15px; border-radius: 25px; 
+            padding: 25px 20px; border-radius: 25px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.12); 
             text-align: center; box-sizing: border-box;
             animation: fadeIn 0.6s ease-out;
@@ -62,10 +65,10 @@
         #timer-box { width: 50px; height: 50px; border: 3px solid #e74c3c; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-weight: 900; color: #e74c3c; font-size: 1.3em; }
         .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 1.1em; transition: 0.2s; box-shadow: 0 3px 5px rgba(0,0,0,0.1); }
         .btn:active { transform: scale(0.97); }
-        .opt-btn { background: #ffffff; color: #333; text-align: left; border: 2px solid #eee; display: flex; align-items: center; }
+        .opt-btn { background: #ffffff; color: #333; text-align: left; border: 2px solid #eee; display: flex; align-items: center; margin-bottom: 8px; }
         .label { background: var(--primary); color: white; min-width: 32px; height: 32px; border-radius: 8px; margin-right: 15px; display: flex; align-items: center; justify-content: center; font-size: 0.9em; }
         
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; border: 1.5px solid #ddd; box-sizing: border-box; font-size: 1.1em; outline: none; }
         input:focus { border-color: var(--primary); }
 
@@ -73,6 +76,7 @@
             0% { transform: translate(1px, 1px) rotate(0deg); }
             20% { transform: translate(-3px, 0px) rotate(1deg); }
             40% { transform: translate(1px, -1px) rotate(1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -97,6 +101,7 @@
                 <input type="text" id="uName" placeholder="ሙሉ ስም">
                 <input type="tel" id="uPhone" placeholder="ስልክ ቁጥር">
                 <button class="btn" onclick="startApp()">መፈተን ጀምር ➔</button>
+                <p id="install-text" style="font-size: 0.8em; color: #666; margin-top: 15px; cursor: pointer; text-decoration: underline;" onclick="installApp()">አፑን ስልክዎ ላይ ለመጫን እዚህ ይንኩ</p>
             </div>
 
             <div id="scr-quiz" class="hidden">
@@ -123,6 +128,7 @@
     </footer>
 
 <script>
+    // 1. Firebase Configuration
     const firebaseConfig = { 
         apiKey: "AIzaSyCLiqB5FqygKqPwLlctFsvQBP58fHontnc", 
         authDomain: "biblicallanguagequizbot.firebaseapp.com", 
@@ -134,20 +140,37 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // 2. Service Worker Registration
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js?v=2.2')
                 .then(reg => console.log('Service Worker Registered'))
-                .catch(err => console.log('Service Worker Registration Failed', err));
+                .catch(err => console.error('Service Worker Registration Failed', err));
         });
     }
 
+    // 3. PWA Installation Logic
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('install-text').style.display = 'block';
+    });
+
+    async function installApp() {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') deferredPrompt = null;
+    }
+
+    // 4. Quiz App Variables
     let qPool = [], ads = [], qIdx = 0, score = 0, timer, tLeft = 20;
     let winChance = 15, minToRoll = 90;
 
     async function startApp() {
         const n = document.getElementById('uName').value, p = document.getElementById('uPhone').value;
-        if(!n || !p) return alert("ስም እና ስልክ ያስገቡ!");
+        if(!n || !p) return alert("እባክዎ ስም እና ስልክ ያስገቡ!");
         localStorage.setItem('un', n); localStorage.setItem('up', p);
 
         try {
@@ -263,8 +286,6 @@
                 rollSection.style.padding = "20px";
                 rollSection.style.borderRadius = "20px";
                 rollSection.style.border = "3px solid #28a745";
-                rollSection.style.marginTop = "15px";
-
                 rollSection.innerHTML = `
                     <div style="font-size:70px; margin-bottom:10px;">🎉</div>
                     <h2 style="color:#28a745; margin:5px 0;">እንኳን ደስ አሎት!</h2>
@@ -276,31 +297,19 @@
                 `;
                 try {
                     await db.collection("winners").add({
-                        name: userName,
-                        phone: userPhone,
-                        prize: "5 ETB Card",
-                        status: "Pending",
+                        name: userName, phone: userPhone, prize: "5 ETB Card", status: "Pending",
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                } catch(e) { console.error("Winner log failed:", e); }
+                } catch(e) { console.error(e); }
             } else {
                 rollSection.innerHTML = `
                     <div style="font-size:60px; margin-bottom:10px; opacity:0.6;">😔</div>
                     <h2 style="color:#e74c3c; margin:5px 0;">አልደረሰዎትም!</h2>
-                    <p style="color:#666; font-size:0.9em;">ጥሩ ሙከራ ነው! በሚቀጥለው ጊዜ ይሳካለዎታል ብለን ተስፋ እናደርጋለን።</p>
                     <button class="btn" onclick="location.reload()" style="background:#888; width:auto; padding:10px 20px;">እንደገና</button>
                 `;
             }
         }, 3000);
     }
-
-    // --- አዲሱ የ Install ፕሮምፕት ማነቃቂያ ---
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        // ተጠቃሚው መፈተን ሲጀምር እንዲጭነው ለመጠየቅ እንጠቀምበታለን
-    });
 </script>
 </body>
 </html>
